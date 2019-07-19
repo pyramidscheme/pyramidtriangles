@@ -1,5 +1,5 @@
 from .showbase import ShowBase
-from color import RGBW
+from color import Color
 import random as rnd
 
 
@@ -13,7 +13,7 @@ class Random(ShowBase):
     def next_frame(self):
         while True:
             self.tri_grid.clear()
-            self.tri_grid.set_cell_by_cellid(rnd.randint(1, self.n_cells-2), RGBW(200, 255, 25, 25))
-            self.tri_grid.set_cell_by_cellid(rnd.randint(1, self.n_cells-2), RGBW(200, 10, 25, 25))
+            self.tri_grid.set_cell_by_cellid(rnd.randint(1, self.n_cells-2), Color(r=0.8, g=1, b=1/10, w=1/10))
+            self.tri_grid.set_cell_by_cellid(rnd.randint(1, self.n_cells-2), Color(r=0.8, g=0.04, b=1/10, w=1/10))
 
             yield self.frame_delay

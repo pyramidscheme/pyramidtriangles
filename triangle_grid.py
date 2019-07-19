@@ -1,4 +1,5 @@
-from color import RGBW
+from color import Color
+
 
 
 def make_tri(model, n_rows):
@@ -153,7 +154,7 @@ class TriangleGrid(object):
         self._model.go()
 
     def clear(self):
-        self.set_all_cells(RGBW(0, 0, 0, 0))
+        self.set_all_cells(Color(r=0, g=0, b=0, w=0))
         self.go()
 
     def get_cells(self):
@@ -181,9 +182,10 @@ class TriangleGrid(object):
     def set_cell(self, cell, color):
         if cell is None:
             print("WARNING: Skipping 'Nonetype' cell")
-        else:
-            for pixel in cell.get_pixels():
-                self._model.set_pixel(pixel, color, cell.get_id())
+            return
+
+        for pixel in cell.get_pixels():
+            self._model.set_pixel(pixel, color, cell.get_id())
 
     def set_cell_by_cellid(self, cell, color):
         for pixel in self._cells[cell].get_pixels():
@@ -215,7 +217,7 @@ class TriangleGrid(object):
         self._model.set_pixel(pixel, color, cellid)  ###Have to pass the cellid through b/c the simulator does not understand pixels
 
     def clear(self):
-        self.set_all_cells(RGBW(0, 0, 0, 0))
+        self.set_all_cells(Color(r=0, g=0, b=0, w=0))
         self.go()
 
     def go(self):
@@ -367,7 +369,7 @@ class TriangleCell(object):
     def get_id(self):
         return self._id
 
-    def get_pixels(self,oriented=True):
+    def get_pixels(self, oriented=True):
         if oriented:
             if self._up_down is 'up':
                 return self._pixels

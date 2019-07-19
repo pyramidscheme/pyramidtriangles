@@ -1,5 +1,5 @@
 from .showbase import ShowBase
-from color import RGBW
+from color import Color
 import time
 
 
@@ -14,7 +14,7 @@ class LeftToRightAndBack(ShowBase):
         x = 0
         y = 0
         fwd = True
-        pix = 0
+
         while True:
 
             if fwd is True:
@@ -27,14 +27,14 @@ class LeftToRightAndBack(ShowBase):
                         if cell is None:
                             pass
                         else:
-                            r=255
-                            g = 0
+                            r = 1.0
+                            g = 0.0
                             for pix in range(6):
-                                self.tri_grid.set_pixel(cell.get_pixels()[pix], RGBW(r, g, 0, 1), cell.get_id())
+                                self.tri_grid.set_pixel(cell.get_pixels()[pix], Color(r=r, g=g, b=0, w=0.01), cell.get_id())
                                 time.sleep(.2)
                                 self.tri_grid.go()
-                                g += 40
-                                r -= 3
+                                r -= 0.01
+                                g += 1/6
                         x += 1
                     x = 0
                     y += 1
@@ -44,7 +44,6 @@ class LeftToRightAndBack(ShowBase):
                     y = ylen-1
                     fwd = False
             else:
-
                 if y >= 0:
                     for rows in self.tri_grid._triangle_grid:
 
@@ -53,14 +52,14 @@ class LeftToRightAndBack(ShowBase):
                         if cell is None:
                             pass
                         else:
-                            g = 255
-                            b = 0
+                            g = 1.0
+                            b = 0.0
                             for pix in range(6):
-                                self.tri_grid.set_pixel(cell.get_pixels()[5-pix], RGBW(0, g, b, 1), cell.get_id())
+                                self.tri_grid.set_pixel(cell.get_pixels()[5-pix], Color(r=0, g=g, b=b, w=0.01), cell.get_id())
                                 time.sleep(.2)
                                 self.tri_grid.go()
-                                g -= 40
-                                b += 40
+                                g -= 1/6
+                                b += 1/6
                         x += 1
                         
                     y -= 1

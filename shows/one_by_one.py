@@ -1,5 +1,5 @@
 from .showbase import ShowBase
-from color import RGBW
+from color import Color
 
 
 class OneByOne(ShowBase):
@@ -15,7 +15,7 @@ class OneByOne(ShowBase):
         while True:
             self.tri_grid.clear()
             print(cell_n)
-            self.tri_grid.set_cell_by_cellid(self.tri_grid.get_cells()[cell_n].get_id(), RGBW(255, 255, 25, 25))
+            self.tri_grid.set_cell_by_cellid(self.tri_grid.get_cells()[cell_n].get_id(), Color(r=1, g=1, b=1/10, w=1/10))
 
             if cell_n >= ncells:
                 cell_n = -1

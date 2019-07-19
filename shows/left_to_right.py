@@ -1,5 +1,5 @@
 from .showbase import ShowBase
-from color import RGBW
+from color import Color
 
 
 class LeftToRight(ShowBase):
@@ -12,6 +12,7 @@ class LeftToRight(ShowBase):
         ylen = len(self.tri_grid._triangle_grid[0])
         x = 0
         y = 0
+
         while True:
             self.tri_grid.clear()
 
@@ -23,7 +24,7 @@ class LeftToRight(ShowBase):
                     if cell is None:
                         pass
                     else:
-                        self.tri_grid.set_cell_by_cellid(cell.get_id(), RGBW(255, 255, 25, 25))
+                        self.tri_grid.set_cell_by_cellid(cell.get_id(), Color(r=1, g=1, b=0.1, w=0.1))
                     x += 1
                 x = 0
                 y += 1

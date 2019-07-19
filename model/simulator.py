@@ -52,7 +52,8 @@ class SimulatorModel(ModelBase):
                 ux = self.CELL_MAP[cell][0]
                 ix = self.CELL_MAP[cell][1] - 1
                 sim_key = cell
-                # The simulator does not care about universes, but does care about UIDs. I'm manufacturing one by joinng the Universe and fixture ID into the key.
+                # The simulator does not care about universes, but does care about UIDs. I'm manufacturing one by
+                # joining the Universe and fixture ID into the key.
                 self.dirty[sim_key] = color
             else:
                 print("WARNING: {0} not in cell ID MAP".format(cell))
@@ -65,8 +66,8 @@ class SimulatorModel(ModelBase):
 
     def go(self):
         for num in self.dirty:
-            color = self.dirty[num]        
-            msg = f'b {num} {color.r},{color.g},{color.b}\n'
+            color = self.dirty[num].dmx
+            msg = f'b {num} {color[0]},{color[1]},{color[2]}\n'
             if self.debug:
                 print(msg)
             self.sock.send(msg.encode())
