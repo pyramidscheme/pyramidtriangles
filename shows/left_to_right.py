@@ -1,4 +1,4 @@
-from color import HSV
+from color import HSV, RGB
 from .showbase import ShowBase
 from grid import TriangleGrid, traversal
 import time
@@ -11,7 +11,7 @@ class LeftToRight(ShowBase):
     def next_frame(self):
         row_count = self.tri_grid.row_count
 
-        hsv = HSV(0.5,0.2,.75)
+        hsv = HSV(0.0,0.9,.5, False)
 #        from IPython import embed; embed() 
         pix_arr = []
         a_ctr = 0
@@ -20,26 +20,25 @@ class LeftToRight(ShowBase):
             for (row, column) in points:
                 cell = self.tri_grid.get_cell_by_coordinates(row, column)
                 b_ctr = 0
-                for pixel in list( self.tri_grid.set_pixels_by_cellid(cell.id) ):
+                for pixel in self.tri_grid._model._pixelmap[cell.id]:
                     if len(pix_arr) <= a_ctr+b_ctr:
                         pix_arr.append([])
                     pix_arr[a_ctr+b_ctr].append(pixel)
-                    pixel(hsv)
-                    self.tri_grid.go()
                     b_ctr += 1
             a_ctr += 4
- 
-
+        self.tri_grid.clear()
+        
         while True:
             for i in pix_arr:
+                
                 for ii in i:
-                    print(ii)
-                    ii(hsv)
+                    print(ii, hsv.hsv, hsv.rgbw)
+                    self.tri_grid._model.set_pixel_by_pixel_id(ii,hsv)
                     self.tri_grid.go()
-                time.sleep(0.2)
-            
-                hsv.h += .1
+                hsv.h += .09
                 if hsv.h >= 1.0:
                     hsv.h = 0.0
+                time.sleep(0.9)
+ 
                 yield self.frame_delay
 

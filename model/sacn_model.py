@@ -66,6 +66,18 @@ class sACN(ModelBase):
                 self.leds[ux][ix + 3] = color.w
             yield set_color
 
+    def set_pixel_by_pixel_id(self, pixel_id, color):
+        ux = self.PIXEL_MAP[pixel_id][0]
+        ix = self.PIXEL_MAP[pixel_id][1] -1  # dmx is 1-based, python lists are 0-based     
+
+        self.leds[ux][ix] = color.r
+        self.leds[ux][ix + 1] = color.g
+        self.leds[ux][ix + 2] = color.b
+        self.leds[ux][ix + 3] = color.w
+        
+
+
+
     def go(self):
         for ux in self.leds:
             self.sender[ux].dmx_data = self.leds[ux]
