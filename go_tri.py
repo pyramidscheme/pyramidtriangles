@@ -329,7 +329,7 @@ if __name__ == '__main__':
         logger.info("Starting SACN")
         model = sACN(model_json="./data/pixel_map.json", pixelmap=demo_triangle_mapping())
 
-        triangle_grid = grid.make_triangle(model, 2)
+        triangle_grid = grid.make_triangle(model, 11)
 
     app = TriangleServer(triangle_grid, args)
     try:
