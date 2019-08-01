@@ -52,6 +52,7 @@ class sACN(ModelBase):
                 self.leds[universe] = [0] * 512
 
     def set_pixels_by_cellid(self, cell_id) -> Iterator[SetColorFunc]:
+
         for pixel in self._pixelmap[cell_id]:
             if pixel not in self.PIXEL_MAP:
                 logger.warning(f'{pixel} not in sACN pixel ID map')

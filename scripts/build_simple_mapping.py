@@ -2,7 +2,7 @@ import os
 import sys
 
 curr_cell = 0
-
+u = 1059
 #Built from https://docs.google.com/spreadsheets/d/16Ys242V437N968W5UU2WQdonFJ6SwZJeYmEXGbC9cYo/edit#gid=0
 ds = {1: [1, 1051,0],
       2: [3, 1018,1050],
@@ -19,20 +19,10 @@ ds = {1: [1, 1051,0],
 
 for row in ds:
     n_cells = ds[row][0] # ncells in row
-    u = ds[row][1] # up cell counter
-    d = ds[row][2] # down cell counter
 
     is_up = True
     for cell in range (1, n_cells+1):
-        if is_up:
-            print('{0}: [{1},{2},{3},{4},{5},{6},{7},{8}],'.format(curr_cell, u, u+1, u+2 , u+3, u+4, u+5, u+6, u+7))
-            is_up = False
-            u += 8
-     
-        else:
-            print('{0}: [{1},{2},{3},{4},{5},{6},{7},{8}],'.format(curr_cell, d ,d+1, d+2, d+3, d+4,d+5,d+6, d+7))
-            d += 8
-            is_up = True
-
+        print('{0}: [{1},{2},{3},{4},{5},{6},{7},{8}],'.format(curr_cell, u, u-1, u-2 , u-3, u-4, u-5, u-6, u-7))
+        u -= 8
         curr_cell += 1
-
+    u -= 9
