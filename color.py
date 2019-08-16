@@ -70,48 +70,53 @@ For example: to gradually dim a color
 
 RGBW
 
-To get the (r,g,b,w) tuples back from a Color object, simpy call Color.rgbw and you will return the (r,g,b,w) tuple.
+To get the (r,g,b,w) tuples back from a Color object, simply call Color.rgbw and you will return the (r,g,b,w) tuple.
 
 """
 import colorsys
-import math
+from math import cos, fmod, pi
 from copy import deepcopy
+from typing import Tuple
 
 __all__=['RGB', 'HSV', 'Hex', 'Color', 'HSI', 'RGBW']
 
+
 def clamp(val, min_value, max_value):
-    "Restrict a value between a minimum and a maximum value"
+    """Restricts a value between a minimum and a maximum value"""
     return max(min(val, max_value), min_value)
 
-def is_hsv_tuple(hsv):
-    "check that a tuple contains 3 values between 0.0 and 1.0"
-    return len(hsv) == 3 and all([(0.0 <= t <= 1.0) for t in hsv])
 
-def is_hsi_hsl_tuple(hsi):
-    ret = True
-    if len(hsi) != 3:
-        ret = False
+def is_hsv_tuple(hsv: Tuple[float, float, float]) -> bool:
+    """Checks that HSV values are valid."""
+    return all([(0.0 <= t <= 1.0) for t in hsv])
+
+
+def is_hsi_hsl_tuple(hsi: Tuple[float, float, float]) -> bool:
     if hsi[0] < 0 or hsi[0] > 360:
-        ret = False
-    if hsi[1] <0.0 or hsi[1] > 1.0:
-        ret = False
-    if hsi[2] <0.0 or hsi[2] > 1.0:
-        ret = False
+        return False
+    if hsi[1] < 0.0 or hsi[1] > 1.0:
+        return False
+    if hsi[2] < 0.0 or hsi[2] > 1.0:
+        return False
 
-    return(ret)
+    return True
 
-def is_rgbw_tuple(rgbw):
-    "check that rgbw tuple is as expected"
-    return len(rgbw) == 4 and all([(0 <= t <= 255) for t in rgbw])
 
-def is_rgb_tuple(rgb):
-    "check that a tuple contains 3 values between 0 and 255"
-    return len(rgb) == 3 and all([(0 <= t <= 255) for t in rgb])
+def is_rgbw_tuple(rgbw: Tuple[int, int, int, int]) -> bool:
+    """Checks that RGBW values are valid."""
+    return all([(0 <= t <= 255) for t in rgbw])
 
-def rgb_to_hsv(rgb):
-    "convert a rgb[0-255] tuple to hsv[0.0-1.0]"
-    f = float(255)
+
+def is_rgb_tuple(rgb: Tuple[int, int, int]) -> bool:
+    """Checks that RGB values are valid."""
+    return all([(0 <= t <= 255) for t in rgb])
+
+
+def rgb_to_hsv(rgb: Tuple[int, int, int]) -> Tuple[float, float, float]:
+    """Converts RGB[0-255] to HSV[0.0-1.0]."""
+    f = 255.0
     return colorsys.rgb_to_hsv(rgb[0]/f, rgb[1]/f, rgb[2]/f)
+
 
 def hsv_to_rgb(hsv):
     assert is_hsv_tuple(hsv), "malformed hsv tuple:" + str(hsv)
@@ -119,158 +124,124 @@ def hsv_to_rgb(hsv):
     r = int(_rgb[0] * 0xff)
     g = int(_rgb[1] * 0xff)
     b = int(_rgb[2] * 0xff)
-    return (r,g,b)
+    return r, g, b
+
 
 def constrain(val, min, max):
     ret = val
     if val <= min:
         ret = min
     if val >= max:
-        ret=max
+        ret = max
     return ret
 
-#https://www.neltnerlabs.com/saikoled/how-to-convert-from-hsi-to-rgb-white                  
-def hsi2rgb(H,S,I):
-    r = 0.0
-    g = 0.0
-    b = 0.0
 
-    H = math.fmod(H,360.0)
-    H = 3.14159*H/180.0
-    S = constrain(S, 0.0,1.0)
-    I = constrain(I, 0.0,1.0)
+# https://www.neltnerlabs.com/saikoled/how-to-convert-from-hsi-to-rgb-white
+def hsi2rgb(hue: float, saturation: float, intensity: float) -> Tuple[int, int, int]:
+    hue = fmod(hue, 360.0)
+    hue = pi * hue / 180.0
+    saturation = constrain(saturation, 0.0, 1.0)
+    intensity = constrain(intensity, 0.0, 1.0)
 
-    if H < 2.09439:
-        r = 255.0*I/3.0*(1.0+S*math.cos(H)/math.cos(1.047196667-H))
-        g = 255.0*I/3.0*(1.0+S*(1.0-math.cos(H)/math.cos(1.047196667-H)))
-        b = 255.0*I/3.0*(1.0-S)
-    elif H < 4.188787:
-        H = H - 2.09439
-        g = 255.0*I/3.0*(1.0+S*math.cos(H)/math.cos(1.047196667-H))
-        b = 255.0*I/3.0*(1.0+S*(1.0-math.cos(H)/math.cos(1.047196667-H)))
-        r = 255.0*I/3.0*(1.0-S)
+    if hue < 2.09439:
+        r = 255.0 * intensity / 3.0 * (1.0 + saturation * cos(hue) / cos(1.047196667 - hue))
+        g = 255.0 * intensity / 3.0 * (1.0 + saturation * (1.0 - cos(hue) / cos(1.047196667 - hue)))
+        b = 255.0 * intensity / 3.0 * (1.0 - saturation)
+    elif hue < 4.188787:
+        hue -= 2.09439
+        g = 255.0 * intensity / 3.0 * (1.0 + saturation * cos(hue) / cos(1.047196667 - hue))
+        b = 255.0 * intensity / 3.0 * (1.0 + saturation * (1.0 - cos(hue) / cos(1.047196667 - hue)))
+        r = 255.0 * intensity / 3.0 * (1.0 - saturation)
     else:
-        H = H - 4.188787
-        b = 255.0*I/3.0*(1.0+S*math.cos(H)/math.cos(1.047196667-H))
-        r = 255.0*I/3.0*(1.0+S*(1.0-math.cos(H)/math.cos(1.047196667-H)))
-        g = 255.0*I/3.0*(1.0-S)
+        hue -= 4.188787
+        b = 255.0 * intensity / 3.0 * (1.0 + saturation * cos(hue) / cos(1.047196667 - hue))
+        r = 255.0 * intensity / 3.0 * (1.0 + saturation * (1.0 - cos(hue) / cos(1.047196667 - hue)))
+        g = 255.0 * intensity / 3.0 * (1.0 - saturation)
 
-    return ( constrain(int(r*3.0),0,255), constrain(int(g*3.0),0,255), constrain(int(b*3.0)\
-,0,255 ))  #for some reason, the rgb numbers need to be X3...       
+    # for some reason, the rgb numbers need to be X3...
+    r = int(r*3)
+    g = int(g*3)
+    b = int(b*3)
 
-
-#https://www.neltnerlabs.com/saikoled/how-to-convert-from-hsi-to-rgb-white                  
-def hsi2rgb(H,S,I):
-    r = 0.0
-    g = 0.0
-    b = 0.0
-
-    H = math.fmod(H,360.0)
-    H = 3.14159*H/180.0
-    S = constrain(S, 0.0,1.0)
-    I = constrain(I, 0.0,1.0)
-
-    if H < 2.09439:
-        r = 255.0*I/3.0*(1.0+S*math.cos(H)/math.cos(1.047196667-H))
-        g = 255.0*I/3.0*(1.0+S*(1.0-math.cos(H)/math.cos(1.047196667-H)))
-        b = 255.0*I/3.0*(1.0-S)
-    elif H < 4.188787:
-        H = H - 2.09439
-        g = 255.0*I/3.0*(1.0+S*math.cos(H)/math.cos(1.047196667-H))
-        b = 255.0*I/3.0*(1.0+S*(1.0-math.cos(H)/math.cos(1.047196667-H)))
-        r = 255.0*I/3.0*(1.0-S)
-    else:
-        H = H - 4.188787
-        b = 255.0*I/3.0*(1.0+S*math.cos(H)/math.cos(1.047196667-H))
-        r = 255.0*I/3.0*(1.0+S*(1.0-math.cos(H)/math.cos(1.047196667-H)))
-        g = 255.0*I/3.0*(1.0-S)
-
-    return ( constrain(int(r*3.0),0,255), constrain(int(g*3.0),0,255), constrain(int(b*3.0)\
-,0,255 ))  #for some reason, the rgb numbers need to be X3...                               
+    return constrain(r, 0, 255), constrain(g, 0, 255), constrain(b, 0, 255)
 
 
-#https://www.neltnerlabs.com/saikoled/how-to-convert-from-hsi-to-rgb-white          
-def hsi2rgbw(H,S,I):
-    r = 0
-    g = 0
-    b = 0
-    w = 0
-    cos_h = 0.0
-    cos_1047_h = 0.0
+# https://www.neltnerlabs.com/saikoled/how-to-convert-from-hsi-to-rgb-white
+def hsi2rgbw(hue: float, saturation: float, intensity: float) -> Tuple[int, int, int, int]:
+    hue = fmod(hue, 360)  # cycle H around to 0-360 degrees
+    hue = pi * hue / 180.0  # Convert to radians
+    saturation = constrain(saturation, 0.0, 1.0)
+    intensity = constrain(intensity, 0.0, 1.0)
 
-    H = float(math.fmod(H,360)) # cycle H around to 0-360 degrees                           
-    H = 3.14159*H/180.0 # Convert to radians.                                               
-    S = constrain(S,0.0,1.0)
-    I = constrain(I,0.0,1.0)
-
-    if(H < 2.09439):
-        cos_h = math.cos(H)
-        cos_1047_h = math.cos(1.047196667-H)
-        r = S*255.0*I/3.0*(1.0+cos_h/cos_1047_h)
-        g = S*255.0*I/3.0*(1.0+(1.0-cos_h/cos_1047_h))
+    if hue < 2.09439:
+        cos_h = cos(hue)
+        cos_1047_h = cos(1.047196667 - hue)
+        r = saturation * 255.0 * intensity / 3.0 * (1.0 + cos_h / cos_1047_h)
+        g = saturation * 255.0 * intensity / 3.0 * (1.0 + (1.0 - cos_h / cos_1047_h))
         b = 0.0
-        w = 255.0*(1.0-S)*I
-    elif(H < 4.188787):
-        H = H - 2.09439
-        cos_h = math.cos(H)
-        cos_1047_h = math.cos(1.047196667-H)
-        g = S*255.0*I/3.0*(1.0+cos_h/cos_1047_h)
-        b = S*255.0*I/3.0*(1.0+(1.0-cos_h/cos_1047_h))
+        w = 255.0 * (1.0 - saturation) * intensity
+    elif hue < 4.188787:
+        hue = hue - 2.09439
+        cos_h = cos(hue)
+        cos_1047_h = cos(1.047196667 - hue)
+        g = saturation * 255.0 * intensity / 3.0 * (1.0 + cos_h / cos_1047_h)
+        b = saturation * 255.0 * intensity / 3.0 * (1.0 + (1.0 - cos_h / cos_1047_h))
         r = 0.0
-        w = 255.0*(1.0-S)*I
+        w = 255.0 * (1.0 - saturation) * intensity
     else:
-        H = H - 4.188787
-        cos_h = math.cos(H)
-        cos_1047_h = math.cos(1.047196667-H)
-        b = S*255.0*I/3.0*(1.0+cos_h/cos_1047_h)
-        r = S*255.0*I/3.0*(1.0+(1.0-cos_h/cos_1047_h))
+        hue = hue - 4.188787
+        cos_h = cos(hue)
+        cos_1047_h = cos(1.047196667 - hue)
+        b = saturation * 255.0 * intensity / 3.0 * (1.0 + cos_h / cos_1047_h)
+        r = saturation * 255.0 * intensity / 3.0 * (1.0 + (1.0 - cos_h / cos_1047_h))
         g = 0.0
-        w = 255.0*(1.0-S)*I
+        w = 255.0 * (1.0 - saturation) * intensity
 
-    return (int(constrain(r*3,0,255)), int(constrain(g*3,0,255)), int(constrain(b*3,0,255)) , int(constrain(w,0,255)))  #for some reason, the rgb numbers need to be X3...              
+    # for some reason, the rgb numbers need to be X3...
+    r = int(r * 3)
+    g = int(g * 3)
+    b = int(b * 3)
 
-
-#https://en.wikipedia.org/wiki/HSL_and_HSV                                                                     
-def hsv2hsl(h,s,v):
-    h = constrain(h,0.0,360.0)
-    s = constrain(s,0.0,1.0)
-    v = constrain(v,0.0,1.0)
-
-    Hhsl = h
-    Lhsl = v-(v*s/2.0)
-    Shsl = 0
-    if Lhsl > 0.0 and Lhsl < 1.0:
-        Shsl = (v-Lhsl)/min(Lhsl, 1.0-Lhsl)
-    
-    return(Hhsl,Lhsl,Shsl)
+    return constrain(r, 0, 255), constrain(g, 0, 255), constrain(b, 0, 255), constrain(w, 0, 255)
 
 
-#https://en.wikipedia.org/wiki/HSL_and_HSV                                                      
-def hsl2hsv(h,s,l):
-    h =constrain(h,0.0,360.0)
-    s =constrain(s,0.0,1.0)
-    l =constrain(l,0.0,1.0)
+# https://en.wikipedia.org/wiki/HSL_and_HSV
+def hsv2hsl(hue: float, saturation: float, value: float) -> Tuple[float, float, float]:
+    hue = constrain(hue, 0.0, 360.0)
+    saturation = constrain(saturation, 0.0, 1.0)
+    value = constrain(value, 0.0, 1.0)
 
-    Hhsv = h
-    Vhsv = l + (s*min(l, 1.0-l))
-    Shsv = 0
-    if Vhsv > 0.0:
-        Shsv = 2.0-(2.0*l/Vhsv)
-    return(Hhsv,Shsv,Vhsv)
-                
+    hsl_lightness = value - (value * saturation / 2.0)
+    hsl_saturation = 0
+    if 0.0 < hsl_lightness < 1.0:
+        hsl_saturation = (value - hsl_lightness) / min(hsl_lightness, 1.0 - hsl_lightness)
 
-#https://en.wikipedia.org/wiki/HSL_and_HSV                                                                        
-def rgb2hsi(r, g, b):
-    r = constrain(float(r)/255.0,0.0,1.0)
-    g = constrain(float(g)/255.0, 0.0,1.0)
-    b = constrain(float(b)/255.0,0.0,1.0)
+    return hue, hsl_lightness, hsl_saturation
+
+
+# https://en.wikipedia.org/wiki/HSL_and_HSV
+def hsl2hsv(hue: float, saturation: float, lightness: float) -> Tuple[float, float, float]:
+    hue = constrain(hue, 0.0, 360.0)
+    saturation = constrain(saturation, 0.0, 1.0)
+    lightness = constrain(lightness, 0.0, 1.0)
+
+    hsv_value = lightness + (saturation * min(lightness, 1.0 - lightness))
+    hsv_saturation = 0
+    if hsv_value > 0.0:
+        hsv_saturation = 2.0-(2.0 * lightness / hsv_value)
+    return hue, hsv_saturation, hsv_value
+
+
+# https://en.wikipedia.org/wiki/HSL_and_HSV
+def rgb2hsi(r: int, g: int, b: int) -> Tuple[float, float, float]:
+    r = constrain(float(r)/255.0, 0.0, 1.0)
+    g = constrain(float(g)/255.0, 0.0, 1.0)
+    b = constrain(float(b)/255.0, 0.0, 1.0)
     intensity = 0.33333*(r+g+b)
 
-    M = max(r,g,b)
-    m = min(r,g,b)
-    C = M - m
+    M = max(r, g, b)
+    m = min(r, g, b)
 
-    saturation = 0.0
     if intensity == 0.0:
         saturation = 0.0
     else:
@@ -283,12 +254,12 @@ def rgb2hsi(r, g, b):
         if M == m:
             hue = 0.0
         else:
-            hue = 60.0* (0.0 + ((g-b) / (M-m)))
+            hue = 60.0 * (0.0 + ((g-b) / (M-m)))
     if M == g:
         if M == m:
             hue = 0.0
         else:
-            hue = 60.0* (2.0 + ((b-r) / (M-m)))
+            hue = 60.0 * (2.0 + ((b-r) / (M-m)))
     if M == b:
         if M == m:
             hue = 0.0
@@ -297,43 +268,46 @@ def rgb2hsi(r, g, b):
     if hue < 0.0:
         hue = hue + 360
 
-    return(hue,abs(saturation),intensity)
+    return hue, abs(saturation), intensity
+
 
 def RGBW(r, g, b, w):
-    "Create RGBW color"
+    """Creates RGBW color."""
     raise Exception("Gotcha!  We can't yet reverse calculate RGBW back to any other color spaces.... work in one of the other spaces and get your RGBW values back from Color.rgbw.  Sorry.")
 
 
-def HSI(h,s,i):
-    "Create new HSI color"
-    t = (h,s,i)
-    assert is_hsi_hsl_tuple(t)
-    return RGB( hsi2rgb(h,s,i) )
+def HSI(h, s, i):
+    """Create new HSI color."""
+    assert is_hsi_hsl_tuple((h, s, i))
+    return RGB(*hsi2rgb(h, s, i))
 
-def RGB(r,g,b, x=False):
-    "Create a new RGB color"
-    t = (r,g,b)
+
+def RGB(r, g, b, x=False):
+    """Create a new RGB color."""
+    t = (r, g, b)
     assert is_rgb_tuple(t)
     return Color(rgb_to_hsv(t), x)
 
-def HSV(h,s,v, x=False):
-    "Create a new HSV color"
-    return Color((h,s,v),x)
 
-def HSL(h,s,l):
-    "Create new HSL color"
-    t = (h,s,l)
-    assert is_hsi_hsl_tuple(t)
-    (h,s,v) = hsl2hsv(t[0], t[1], t[2])
-    print(h,s,v)
-    return Color((constrain(h/360.0,0.0,1.0),s,v))
+def HSV(h, s, v, x=False):
+    """Create a new HSV color."""
+    return Color((h, s, v), x)
+
+
+def HSL(h, s, l):
+    """Create new HSL color"""
+    assert is_hsi_hsl_tuple((h, s, l))
+    (h, s, v) = hsl2hsv(h, s, l)
+    return Color((constrain(h/360.0, 0.0, 1.0), s, v))
+
 
 def Hex(value):
-    "Create a new Color from a hex string"
+    """Create a new Color from a hex string"""
     value = value.lstrip('#')
     lv = len(value)
     rgb_t = (int(value[i:i+int(lv/3)], 16) for i in range(0, lv, int(lv/3)))
     return RGB(*rgb_t)
+
 
 class Color:
     def __init__(self, hsv_tuple, only_rgb=False):
@@ -352,35 +326,35 @@ class Color:
         self.hsv_t = list(hsv_tuple)
 
     @property
-    def rgbw(self):
-        "returns a tuple of 4 values each in the range of 0-255"
+    def rgbw(self) -> Tuple[int, int, int, int]:
+        """Returns RGBW values each in the range of 0-255."""
         hsi = rgb2hsi(self.rgb[0], self.rgb[1], self.rgb[2])
-        return hsi2rgbw( hsi[0], hsi[1], hsi[2] )
+        return hsi2rgbw(hsi[0], hsi[1], hsi[2])
 
     @property
     def rgb(self):
-        "returns a rgb[0-255] tuple"
+        """Returns an RGB[0-255] tuple."""
         return hsv_to_rgb(self.hsv_t)
 
     @property
     def hsv(self):
-        "returns a hsv[0.0-1.0] tuple"
+        """Returns a HSV[0.0-1.0] tuple."""
         return tuple(self.hsv_t)
 
     @property
     def hex(self):
-        "returns a hexadecimal string"
+        """Returns a hexadecimal string."""
         return '#%02x%02x%02x' % self.rgb
-    
+
     @property
     def hsl(self):
-        "returns HSL tuple"
-        (h,s,l) = hsv2hsl(self.hsv_t[0], self.hsv_t[1], self.hsv_t[2])
-        h = constrain(h*360.0, 0.0,360.0)
-        return (h,s,l)
+        """Returns HSL tuple."""
+        (h, s, l) = hsv2hsl(self.hsv_t[0], self.hsv_t[1], self.hsv_t[2])
+        h = constrain(h*360.0, 0.0, 360.0)
+        return h, s, l
 
     """
-    Properties representing individual HSV compnents
+    Properties representing individual HSV components
     Adjusting 'H' shifts the color around the color wheel
     Adjusting 'S' adjusts the saturation of the color
     Adjusting 'V' adjusts the brightness/intensity of the color
@@ -412,11 +386,8 @@ class Color:
         v = clamp(val, 0.0, 1.0) 
         self.hsv_t[2] = round(v, 8)
 
-        
-
-
-    """                                                                                                                                                                      
-    Properties representing individual RGB components                                                                                                                        
+    """
+    Properties representing individual RGB components
     """
     @property
     def rgb_r(self):
@@ -485,8 +456,7 @@ class Color:
         else:
             return self.rgbw[3]
 
-if __name__=='__main__':
+
+if __name__ == '__main__':
     import doctest
     doctest.testmod()
-
-
