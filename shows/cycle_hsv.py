@@ -22,21 +22,21 @@ class CycleHSV(ShowBase):
                 ca.v += 0.0008
                 self.tri_grid.set_all_cells(ca)
                 self.tri_grid.go()
-                time.sleep(.01)
+                time.sleep(.025)
                 print('CA', ca.hsv, 'RGB', ca.rgb, 'RGBW', ca.rgbw)
 
             while ca.s < 1.0:
                 ca.s += 0.0008
                 self.tri_grid.set_all_cells(ca)
                 self.tri_grid.go()
-                time.sleep(.01)
+                time.sleep(.025)
                 print('CA', ca.hsv, 'RGB', ca.rgb, 'RGBW', ca.rgbw)
 
             while ca.h < 1.0:
                 ca.h += 0.0008
                 self.tri_grid.set_all_cells(ca)
                 self.tri_grid.go()
-                time.sleep(.01)
+                time.sleep(.025)
                 print('CA', ca.hsv, 'RGB', ca.rgb, 'RGBW', ca.rgbw)
 
 
@@ -50,7 +50,7 @@ class CycleHSV(ShowBase):
                 ca.v += 0.0008
                 self.tri_grid.set_all_cells(ca)
                 self.tri_grid.go()
-                time.sleep(.01)
+                time.sleep(.025)
                 print('CA', ca.hsv, 'RGB', ca.rgb, 'RGBW', ca.rgbw)
 
 
@@ -58,7 +58,7 @@ class CycleHSV(ShowBase):
                 ca.s += 0.0008
                 self.tri_grid.set_all_cells(ca)
                 self.tri_grid.go()
-                time.sleep(.01)
+                time.sleep(.025)
                 print('CA', ca.hsv, 'RGB', ca.rgb, 'RGBW', ca.rgbw)
 
 
@@ -66,7 +66,7 @@ class CycleHSV(ShowBase):
                 ca.h += 0.0008
                 self.tri_grid.set_all_cells(ca)
                 self.tri_grid.go()
-                time.sleep(.01)
+                time.sleep(.025)
                 print('CA', ca.hsv, 'RGB', ca.rgb, 'RGBW', ca.rgbw)
 
 
@@ -80,14 +80,14 @@ class CycleHSV(ShowBase):
                 ca.s += 0.0008
                 self.tri_grid.set_all_cells(ca)
                 self.tri_grid.go()
-                time.sleep(.01)
+                time.sleep(.025)
                 print('CA', ca.hsv, 'RGB', ca.rgb, 'RGBW', ca.rgbw)
 
                 while ca.h < 1.0:
                     ca.h += 0.0008
                     self.tri_grid.set_all_cells(ca)
                     self.tri_grid.go()
-                    time.sleep(.01)
+                    time.sleep(.025)
                     print('CA', ca.hsv, 'RGB', ca.rgb, 'RGBW', ca.rgbw)
 
 

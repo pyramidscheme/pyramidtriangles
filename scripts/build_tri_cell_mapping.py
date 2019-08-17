@@ -4,20 +4,20 @@ import sys
 curr_cell = 0
 
 #Built from https://docs.google.com/spreadsheets/d/16Ys242V437N968W5UU2WQdonFJ6SwZJeYmEXGbC9cYo/edit#gid=0
-ds = {1: [1, 1051,0],
-      2: [3, 1018,1050],
-      3: [5, 969, 1017],
-      4: [7, 904, 968],
-      5: [9, 823, 903],
-      6: [11, 726,822],
-      7: [13, 613, 725],
-      8: [15, 484,612],
-      9: [17, 339, 483],
-      10: [19, 178,338],
-      11: [21, 1, 177]
+ds = {1: [1, 1052,0],
+      2: [3, 1019,1051],
+      3: [5, 970, 1018],
+      4: [7, 905, 969],
+      5: [9, 824, 904],
+      6: [11, 727,823],
+      7: [13, 614, 726],
+      8: [15, 485,613],
+      9: [17, 340, 484],
+      10: [19, 179,339],
+      11: [21, 2, 178]
       }
 
-for row in ds:
+for row in sorted(ds):
     n_cells = ds[row][0] # ncells in row
     u = ds[row][1] # up cell counter
     d = ds[row][2] # down cell counter
@@ -30,8 +30,8 @@ for row in ds:
             u += 8
      
         else:
-            print('{0}: [{1},{2},{3},{4},{5},{6},{7},{8}],'.format(curr_cell, d ,d+1, d+2, d+3, d+4,d+5,d+6, d+7))
-            d += 8
+            print('{0}: [{1},{2},{3},{4},{5},{6},{7},{8}],'.format(curr_cell, d ,d-1, d-2, d-3, d-4,d-5,d-6, d-7))
+            d -= 8
             is_up = True
 
         curr_cell += 1

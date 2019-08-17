@@ -4,7 +4,7 @@ import random as rnd
 
 
 class Random(ShowBase):
-    def __init__(self, tri_grid, frame_delay=0.1):
+    def __init__(self, tri_grid, frame_delay=0.5):
         self.tri_grid = tri_grid
         self.frame_delay = frame_delay
 
