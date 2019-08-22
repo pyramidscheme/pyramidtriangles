@@ -1,6 +1,7 @@
 import argparse
 import faulthandler
 import logging
+import os
 import sys
 import time
 import queue
@@ -282,6 +283,8 @@ class TriangleServer(object):
 
         cherrypy.engine.subscribe('stop', self.stop)
 
+        static_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'web/static')
+
         config = {
             'global': {
                 'server.socket_host': '0.0.0.0',
@@ -289,6 +292,14 @@ class TriangleServer(object):
                 # 'engine.timeout_monitor.on' : True,
                 # 'engine.timeout_monitor.frequency' : 240,
                 # 'response.timeout' : 60*15
+            },
+            '/': {
+                'tools.gzip.on': True,
+                'tools.staticdir.root': static_path,
+            },
+            '/web/static': {
+                'tools.staticdir.on': True,
+                'tools.staticdir.dir': "static"
             }
         }
 
