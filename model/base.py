@@ -11,7 +11,7 @@ class DisplayColor(ABC):
     @abstractmethod
     def rgb256(self) -> tuple[int, int, int]:
         """
-        Called to emit an RGB triple in [0-255].
+        Emit an RGB triple in [0-255].
         """
         raise NotImplementedError
 
@@ -19,7 +19,14 @@ class DisplayColor(ABC):
     @abstractmethod
     def rgbw256(self) -> tuple[int, int, int, int]:
         """
-        Called to emit an RGBW quadruple in [0-255].
+        Emit an RGBW quadruple in [0-255].
+        """
+        raise NotImplementedError
+
+    @property
+    def hsv(self):
+        """
+        Returns an HSV representation. Used for HSV show knobs.
         """
         raise NotImplementedError
 
@@ -33,6 +40,7 @@ class DisplayColor(ABC):
 
 class Model(ABC):
     """Abstract base class for simulators."""
+    brightness: float
 
     @abstractmethod
     def activate(self, cells: Iterable['Cell']):

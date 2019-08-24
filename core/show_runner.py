@@ -1,15 +1,17 @@
-import logging
-from collections.abc import Generator
+from collections.abc import Generator, Iterable, Mapping
 from dataclasses import dataclass
+import logging
 from queue import Queue, Empty
+import sqlite3
 import time
 from threading import Event, Thread
-from typing import Optional
+from typing import Optional, Any
 
 import shows
 import util
 from grid import Pyramid
 from shows import Show
+from .playlist_controller import PlaylistController
 
 logger = logging.getLogger("pyramidtriangles")
 
@@ -42,6 +44,7 @@ class ShowRunner(Thread):
     def __init__(self,
                  pyramid: Pyramid,
                  command_queue: Queue,
+                 status_queue: Queue,
                  shutdown: Event,
                  max_showtime: int,
                  fail_hard: bool):
@@ -50,6 +53,7 @@ class ShowRunner(Thread):
 
         self.pyramid = pyramid
         self.command_queue = command_queue
+        self.status_queue = status_queue
         self.shutdown = shutdown
         self.__max_show_time = max_showtime
         self.fail_hard = fail_hard
@@ -62,11 +66,20 @@ class ShowRunner(Thread):
         # map of names -> show constructors
         self.shows = dict(shows.load_shows())
         self.random_show_sequence = shows.random_shows()
+        self.playlist = PlaylistController()
 
         # show state variables
         self.show: Optional[Show] = None
         self.prev_show: Optional[Show] = None
         self.framegen: Generator[float, None, None] = (_ for _ in ())
+
+    def _send_status(self):
+        """
+        Enqueue a status update in queue for consumers.
+        """
+        status = self.status
+        if status:
+            self.status_queue.put(status)
 
     @property
     def status(self):
@@ -74,12 +87,20 @@ class ShowRunner(Thread):
         Returns the status of the ShowRunner.
         """
         if self.show is None:
-            return "Not running"
-        else:
-            now = time.perf_counter()
-            elapsed = now - self.show_start_time
-            remaining = self.max_show_time - elapsed
-            return "Running %s (%d seconds left)" % (self.show.name, remaining)
+            return None
+
+        knobs_json = []
+        if self.show.knobs:
+            knobs_json = self.show.knobs.json_array
+
+        # Represents JSON status object
+        return Status(
+            show=self.show.name,
+            show_start_time=self.show_start_time,
+            knobs=knobs_json,
+            max_show_time=self.max_show_time,
+            brightness_scale=self.brightness_scale,
+            speed_scale=self.speed_scale)
 
     def process_command_queue(self):
         msgs = []
@@ -100,6 +121,15 @@ class ShowRunner(Thread):
             self.max_show_time = msg.runtime
         elif isinstance(msg, BrightnessCmd):
             self.brightness_scale = msg.brightness
+        elif isinstance(msg, SpeedCmd):
+            self.speed_scale = msg.speed
+        elif isinstance(msg, ShowKnobCmd):
+            curr_show_name = self.show.name if self.show else ''
+            if curr_show_name != msg.show:
+                logger.info(f"Received knob value for show '{msg.show}' but show '{curr_show_name}' running")
+                return
+            if self.show.knobs:
+                self.show.knobs[msg.name] = msg.value
         elif isinstance(msg, tuple):
             logger.debug(f'OSC: {msg}')
 
@@ -126,18 +156,31 @@ class ShowRunner(Thread):
         """Clears all panels."""
         self.pyramid.clear()
 
-    def next_show(self, name=None):
+    def next_show(self, name: Optional[str] = None):
         """
         Sets the next show to run, in priority of:
-            1. Show passed as argument
-            2. Show from semi-random sequence generator
+            1. Show passed as `name` argument
+            2. Show in playlist
+            3. Show from semi-random sequence generator
         """
-        show_cls = None
+        show_cls: type[Show] = None
         if name:
             if name in self.shows:
                 show_cls = self.shows[name]
             else:
                 logger.warning(f"unknown show as argument: '{name}'")
+
+        if not show_cls:
+            try:
+                name = self.playlist.next()
+            except sqlite3.DatabaseError as e:
+                logger.error(f"error getting next show from playlist, skipping: {e}")
+
+            if name:
+                if name in self.shows:
+                    show_cls = self.shows[name]
+                else:
+                    logger.warning(f"unknown show from playlist: '{name}'")
 
         if not show_cls:
             logger.info("choosing random show")
@@ -150,6 +193,7 @@ class ShowRunner(Thread):
         self.show = show_cls(self.pyramid)
         self.show_start_time = time.perf_counter()
         self.framegen = self.show.next_frame()
+        self._send_status()
 
     def get_next_frame(self):
         """return a delay or None"""
@@ -159,7 +203,7 @@ class ShowRunner(Thread):
             return None
 
     def run(self):
-        if not (self.show and self.framegen):
+        if not self.show or not self.framegen:
             print("Next Next Next")
             self.next_show()
 
@@ -199,6 +243,7 @@ class ShowRunner(Thread):
     def max_show_time(self, show_time: int):
         """Sets show_time, at least 5 seconds."""
         self.__max_show_time = show_time if show_time >= 5 else 5
+        self._send_status()
 
     @property
     def brightness_scale(self) -> float:
@@ -209,15 +254,30 @@ class ShowRunner(Thread):
         """Sets brightness in [0, 1]."""
         self.__brightness_scale = min(max(0.0, brightness), 1.0)
         self.pyramid.face.model.brightness = self.__brightness_scale
+        self._send_status()
 
     @property
-    def speed_scale(self):
+    def speed_scale(self) -> float:
         return self.__speed_scale
 
     @speed_scale.setter
     def speed_scale(self, speed: float):
         """Sets show speed multiplier in [0.5, 2.0], 1.0 is normal, lower is faster, higher is slower."""
         self.__speed_scale = min(max(0.5, speed), 2.0)
+        self._send_status()
+
+
+@dataclass
+class Status:
+    """Represents current status of ShowRunner"""
+    show: str
+    show_start_time: float
+    max_show_time: int
+    brightness_scale: float
+    speed_scale: float
+    # {show: [{knob1: {_some values_}}, ...]}
+    knobs: Iterable[Mapping[str, Mapping[str, Any]]]
+    seconds_remaining: int = 0
 
 
 @dataclass(frozen=True)
@@ -229,7 +289,7 @@ class ClearCmd:
 @dataclass(frozen=True)
 class RunShowCmd:
     """Run this show now."""
-    show: str
+    show: Optional[str]
 
 
 @dataclass(frozen=True)
@@ -242,3 +302,15 @@ class RuntimeCmd:
 class BrightnessCmd:
     """Change brightness scale in [0, 1]."""
     brightness: float
+
+
+@dataclass(frozen=True)
+class ShowKnobCmd:
+    show: str
+    name: str
+    value: shows.KnobValue
+
+
+@dataclass(frozen=True)
+class SpeedCmd:
+    speed: float

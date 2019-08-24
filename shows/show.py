@@ -1,6 +1,9 @@
 from abc import ABC, abstractmethod
 from collections.abc import Generator
 
+from grid import Pyramid
+from .knobs import KnobCollection
+
 # Will contain all available non-debug shows and debug shows.
 registry = set()
 debug_registry = set()
@@ -35,6 +38,10 @@ class Show(ABC):
         if debug:
             debug_registry.add(cls)
 
+    @abstractmethod
+    def __init__(self, pyramid: Pyramid):
+        ...
+
     @property
     def name(self) -> str:
         """Returns the name of the show."""
@@ -47,6 +54,17 @@ class Show(ABC):
         """
         return ''
 
+    @property
+    def knobs(self) -> KnobCollection:
+        """
+        Returns the show's KnobMediator. Creates a new one if needed.
+        """
+        try:
+            return self.__knobs
+        except AttributeError:
+            self.__knobs = KnobCollection()
+            return self.__knobs
+
     # next_frame returns a generator of floats, so the function should `yield` float values.
     @abstractmethod
     def next_frame(self) -> Generator[float, None, None]:
@@ -54,4 +72,4 @@ class Show(ABC):
         Draw the next step of the animation.  This is the main loop of the show.  Set some pixels and then 'yield' a
         number to indicate how long you'd like to wait before drawing the next frame.  Delay numbers are in seconds.
         """
-        raise NotImplementedError
+        ...
