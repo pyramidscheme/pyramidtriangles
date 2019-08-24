@@ -1,27 +1,47 @@
 from abc import ABC, abstractmethod
 from functools import lru_cache
 from random import choice
-from typing import Iterator, List, Tuple, Type
+from typing import Iterator, Tuple, Type, TypeVar, Optional, Iterable
+
+from .knobs import KnobMediator
+
+Show = TypeVar('Show', bound="ShowBase")
 
 
 class ShowBase(ABC):
     """Abstract base class to register Shows"""
 
     @property
-    def name(self):
+    def name(self) -> str:
         """Returns the name of the show."""
         return type(self).__name__
 
+    @staticmethod
+    def description() -> str:
+        """
+        Returns a show's description when overridden, or empty string.
+        """
+        return ''
+
+    @property
+    def knobs(self) -> Optional[KnobMediator]:
+        """
+        Returns the show's KnobMediator or None, which is used to mediate configurable 'knobs' which the UI can input
+        into a running show.
+        """
+        return None
+
     @abstractmethod
-    def next_frame(self):
+    def next_frame(self) -> int:
         """
         Draw the next step of the animation.  This is the main loop of the show.  Set some pixels and then 'yield' a
         number to indicate how long you'd like to wait before drawing the next frame.  Delay numbers are in seconds.
         """
+        raise NotImplementedError
 
 
 @lru_cache(maxsize=None)
-def load_shows() -> List[Tuple[str, Type[ShowBase]]]:
+def load_shows() -> Iterable[Tuple[str, Type[Show]]]:
     """Return a sorted list of tuples (name, class) of ShowBase subclasses."""
     return sorted([(cls.__name__, cls) for cls in ShowBase.__subclasses__()])
 

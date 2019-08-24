@@ -1,0 +1,75 @@
+import React, { useEffect, useState } from "react";
+import axios from "axios";
+
+const updateSeconds = 10;
+
+const StatusStateContext = React.createContext();
+const StatusRefreshContext = React.createContext();
+
+function StatusProvider({children}) {
+  const [show, setShow] = useState('');
+  const [seconds, setSeconds] = useState(60);
+  const [showKnobs, setShowKnobs] = useState([]);
+
+  const state = {
+    show: show,
+    seconds: seconds,
+    showKnobs: showKnobs,
+  };
+
+  const updateStatus = async () => {
+    const response = await axios.get('status');
+    const {show, seconds_remaining, knobs} = response.data;
+    setShow(show);
+    setSeconds(seconds_remaining);
+    setShowKnobs(knobs);
+  };
+
+  const decrementSeconds = () => {
+    setSeconds(secs => secs > 0 ? secs - 1 : secs);
+  };
+
+  useEffect(() => {
+    // This code duplication is annoying but seems the easiest way to avoid an react-hooks/exhaustive-deps error.
+    axios.get('status').then((resp) => {
+      const {show, seconds_remaining, knobs} = resp.data;
+      setShow(show);
+      setSeconds(seconds_remaining);
+      setShowKnobs(knobs);
+    });
+    const statusInterval = setInterval(updateStatus,updateSeconds * 1000);
+    const countdownInterval = setInterval(decrementSeconds, 1000);
+
+    return () => {
+      clearInterval(statusInterval);
+      clearInterval(countdownInterval);
+    }
+  }, []);
+
+  return (
+    <StatusStateContext.Provider value={state}>
+      <StatusRefreshContext.Provider value={updateStatus}>
+        {children}
+      </StatusRefreshContext.Provider>
+    </StatusStateContext.Provider>
+  );
+}
+
+function useStatusState() {
+  const context = React.useContext(StatusStateContext);
+  if (context === undefined) {
+    throw new Error('useStatusState must be used within a StatusStateContext')
+  }
+  return context;
+}
+
+// Children can force an update with 'useStatusRefresh'.
+function useStatusRefresh() {
+  const context = React.useContext(StatusRefreshContext);
+  if (context === undefined) {
+    throw new Error('useStatusRefresh must be used within a StatusRefreshContext')
+  }
+  return context;
+}
+
+export {StatusProvider, useStatusState, useStatusRefresh};

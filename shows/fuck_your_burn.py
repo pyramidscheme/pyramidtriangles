@@ -1,7 +1,9 @@
 from itertools import repeat, chain
+from typing import Iterable
 
-from color import RGB
-from grid import Grid, Position, Pyramid
+from color import HSV
+from grid import Position, Pyramid, Grid
+from .knobs import KnobFactory
 from randomcolor import random_color
 from .showbase import ShowBase
 
@@ -9,12 +11,26 @@ from .showbase import ShowBase
 class FuckYourBurn(ShowBase):
     grid: Grid
 
-    def __init__(self, pyramid: Pyramid, frame_delay: float = 1.0):
+    @staticmethod
+    def description() -> str:
+        return 'FUCK YOUR BURN'
+
+    def __init__(self, pyramid: Pyramid):
         self.grid = pyramid.panel
-        self.frame_delay = frame_delay
+
+        # Knobs to change for effect
+        self.__knobs = KnobFactory() \
+            .value('Speed', default=1.0, min=0.2, max=2.0, step=0.2) \
+            .hsv('Letter Color', default=random_color(hue='purple')) \
+            .hsv('Background Color', default=HSV(0, 0, 0)) \
+            .create()
+
+    @property
+    def knobs(self):
+        return self.__knobs
 
     @staticmethod
-    def fu():
+    def fu() -> Iterable[Position]:
         positions = (
             (5, 2), (5, 3), (5, 4), (5, 5),
             (6, 2), (6, 3),
@@ -26,7 +42,7 @@ class FuckYourBurn(ShowBase):
         return [Position(row, col) for row, col in positions]
 
     @staticmethod
-    def ck():
+    def ck() -> Iterable[Position]:
         positions = (
             (4, 0), (4, 1), (4, 2), (4, 3), (4, 4), (4, 5),
             (5, 0), (5, 1),
@@ -38,7 +54,7 @@ class FuckYourBurn(ShowBase):
         return [Position(row, col) for row, col in positions]
 
     @staticmethod
-    def yo():
+    def yo() -> Iterable[Position]:
         positions = (
             (5, 2), (5, 3), (5, 6), (5, 7),
             (6, 2), (6, 3), (6, 4), (6, 5), (6, 6), (6, 7),
@@ -49,7 +65,7 @@ class FuckYourBurn(ShowBase):
         return [Position(row, col) for row, col in positions]
 
     @staticmethod
-    def ur():
+    def ur() -> Iterable[Position]:
         positions = (
             (4, 0), (4, 1), (4, 4), (4, 5),
             (5, 0), (5, 1), (5, 4), (5, 5),
@@ -62,7 +78,7 @@ class FuckYourBurn(ShowBase):
         return [Position(row, col) for row, col in positions]
 
     @staticmethod
-    def bu():
+    def bu() -> Iterable[Position]:
         positions = (
             (4, 0), (4, 1), (4, 2), (4, 3), (4, 4),
             (5, 0), (5, 1), (5, 4), (5, 5),
@@ -75,7 +91,7 @@ class FuckYourBurn(ShowBase):
         return [Position(row, col) for row, col in positions]
 
     @staticmethod
-    def rn():
+    def rn() -> Iterable[Position]:
         positions = (
             (2, 0), (2, 1), (2, 2), (2, 3), (2, 4),
             (3, 0), (3, 1), (3, 4), (3, 5),
@@ -89,21 +105,20 @@ class FuckYourBurn(ShowBase):
         return [Position(row, col) for row, col in positions]
 
     def next_frame(self):
-        background = RGB(0, 0, 0)
-        color = random_color(hue='purple')
 
         letters = (self.fu, self.ck, self.yo, self.ur, self.bu, self.rn)
 
         while True:
-            self.grid.clear(background)
+            self.grid.clear(self.knobs['Background Color'])
 
-            def prev():
+            # Function variable to return past frame's letters as an optimization for clearing
+            def prev() -> Iterable[Position]:
                 return []
 
             for curr in chain.from_iterable(repeat(letters)):
-                [self.grid.set(pos, background) for pos in prev()]
-                [self.grid.set(pos, color) for pos in curr()]
+                [self.grid.set(pos, self.knobs['Background Color']) for pos in prev()]
+                [self.grid.set(pos, self.knobs['Letter Color']) for pos in curr()]
                 prev = curr
 
                 self.grid.go()
-                yield self.frame_delay
+                yield self.knobs['Speed']

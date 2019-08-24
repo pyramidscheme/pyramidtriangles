@@ -1,5 +1,6 @@
 from typing import Iterable, Type
 from pytest import raises
+from typing import Iterable
 
 from grid import (
     Position, Geometry, Cell, Address, bottom_edge, left_edge, right_edge, vertex_neighbors, edge_neighbors,

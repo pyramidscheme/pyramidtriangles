@@ -1,10 +1,12 @@
 # These imports include submodules under the `shows` namespace (e.g. shows.UpDown is available).
-from .showbase import ShowBase, load_shows, random_shows
+from .showbase import Show, ShowBase, load_shows, random_shows
+from .knobs import KnobType
 
 from .circling import Circling
 from .color_pulse import ColorPulse
 from .cycle_hsv import CycleHSV
 from .fuck_your_burn import FuckYourBurn
+from .gears import Gears
 from .index_debug import IndexDebug
 from .left_to_right import LeftToRight
 from .left_to_right_and_back import LeftToRightAndBack
@@ -16,8 +18,8 @@ from .marching_hexes import MarchingHexes
 from .random_cells import Random
 #from .roar import Roar
 from .sparkles import Sparkles
-#from .stargate import Stargate
-#from .strobe import Strobe
+from .stargate import Stargate
+from .strobe import Strobe
 from .tendrils import Tendrils
 from .top_down import TopDown
 from .up_down import UpDown

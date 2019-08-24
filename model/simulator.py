@@ -1,11 +1,8 @@
-"""
-Model to communicate with a Simulator over a TCP socket.
-"""
 import logging
 import queue
 import socket
-
 from typing import Iterable, Type
+
 from grid import Address, Cell
 from .base import ModelBase, DisplayColor
 
@@ -14,6 +11,9 @@ logger = logging.getLogger("pyramidtriangles")
 
 
 class SimulatorModel(ModelBase):
+    """
+    Model to communicate with a Simulator over a TCP socket.
+    """
     def __init__(self, hostname: str, port: int):
         self.hostname = hostname
         self.port = port

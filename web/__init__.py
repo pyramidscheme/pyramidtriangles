@@ -1,1 +1,1 @@
-from .web import TriangleWeb
+from .web import Web, LatestStatus

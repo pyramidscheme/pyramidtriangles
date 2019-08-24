@@ -40,8 +40,8 @@ def server_test():
         osc.osc_terminate()
 
 
-def create_server(shutdown: Event, queue: Queue, host: str = '0.0.0.0', port: int = 5700):
-    """Creates OSC listener threads and blocks until shutdown."""
+def create_osc_server(shutdown: Event, queue: Queue, address: str = '0.0.0.0', port: int = 5700):
+    """Creates an OSC server to listen and place messages on queue. Blocks until shutdown event signaled."""
     last_msg = defaultdict(float)
 
     def handler(addr, tags, data, source):
@@ -49,17 +49,17 @@ def create_server(shutdown: Event, queue: Queue, host: str = '0.0.0.0', port: in
         sincelast = now - last_msg[addr]
 
         if sincelast >= THROTTLE_TIME:
-            logger.debug("%s [%s] %s", addr, tags, str(data))
+            logger.debug(f'OSC message received: {addr} [{tags}] {data}')
             last_msg[addr] = now
             queue.put((addr, data))
 
-    logger.info(f'Starting OSC Listener on {host}:{port}')
+    logger.info(f'Starting OSC Listener on {address}:{port}')
     osc.osc_startup()
-    osc.osc_udp_server(host, port, "main")
+    osc.osc_udp_server(address, port, "main")
     osc.osc_method("/*", handler, argscheme=oscmethod.OSCARG_ADDRESS + oscmethod.OSCARG_DATAUNPACK)
-    # osc.osc_process() isn't necessary when using as_allthreads
+    # osc.osc_process() isn't necessary when using as_allthreads module
 
-    # Blocks thread until shutdown event is triggered, then cleans up OSC threads
+    # Blocks execution until shutdown is signaled, then cleans up
     shutdown.wait()
     osc.osc_terminate()
 

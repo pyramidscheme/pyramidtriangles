@@ -1,60 +1,69 @@
+import threading
 from queue import Queue
-import time
-from typing import List
+from os import path
 import cherrypy
-from jinja2 import Environment, PackageLoader, select_autoescape
+from typing import Any, Dict, Optional
+
+from core import PlaylistController
+from .brightness import Brightness
+from .cycle_time import CycleTime
+from .latest_status import LatestStatus
+from .playlist import Playlist
+from .shows import Shows
+from .show_knob import ShowKnob
+from .speed import Speed
+from .status import Status
 
 
-class TriangleWeb(object):
+class Web:
     """Web API for running triangle shows."""
-    def __init__(self, queue: Queue, runner: "ShowRunner", show_names: List[str]):
-        self.queue = queue
-        self.runner = runner
-        self.shows = show_names
+    def __init__(self, shutdown: threading.Event, command_queue: Queue, status_queue: Queue):
+        self.shutdown = shutdown
 
-        self.env = Environment(
-            loader=PackageLoader(__name__, 'templates'),
-            autoescape=select_autoescape(default_for_string=True, default=True)
-        )
+        # In-memory DB is easier than organizing thread-safety around all operations. At least one connection must stay
+        # open. 'self.db' shouldn't be closed.
+        self.db = PlaylistController()
 
-    @cherrypy.expose
-    def index(self):
-        # set a no-cache header so the show status is up to date
-        cherrypy.response.headers['Cache-Control'] = "no-cache, no-store, must-revalidate, max-age=0"
-        cherrypy.response.headers['Expires'] = 0
+        status = LatestStatus(status_queue)
 
-        template = self.env.get_template("index.html")
-        return template.render(status=self.runner.status(), shows=self.shows)
+        # These all are REST endpoints, path denoted by the variable name (e.g. /cycle_time).
+        self.brightness = Brightness(command_queue, status)
+        self.cycle_time = CycleTime(command_queue, status)
+        self.playlist = Playlist(self.db)
+        self.shows = Shows(command_queue)
+        self.show_knob = ShowKnob(command_queue)
+        self.speed = Speed(command_queue, status)
+        self.status = Status(status)
 
-    @cherrypy.expose
-    def clear_show(self):
-        self.queue.put("clear")
-        raise cherrypy.HTTPRedirect('/')
+    @staticmethod
+    def build_config(config: Optional[Dict[str, Any]] = None) -> Dict[str, Any]:
+        """
+        Builds a cherrypy config by merging settings into the config argument.
+        Exposed so tests can reuse this config.
+        """
+        directory = path.dirname(path.abspath(__file__))
+        static_path = path.join(directory, 'frontend/build')
 
-    @cherrypy.expose
-    def change_run_time(self, run_time=None):
-        try:
-            run_time = int(run_time)
-        except ValueError:
-            raise cherrypy.HTTPError(400)
+        if config is None:
+            config = {}
 
-        print(f'changing run_time to: {run_time}')
-        self.queue.put(f'inc runtime:{run_time}')
-        raise cherrypy.HTTPRedirect('/')
+        config.update({
+            '/': {
+                'request.dispatch': cherrypy.dispatch.MethodDispatcher(),
+                'tools.gzip.on': True,
+                'tools.staticdir.on': True,
+                'tools.staticdir.dir': static_path,
+                'tools.staticdir.index': 'index.html',
+            }
+        })
+        return config
 
-    @cherrypy.expose
-    def change_brightness(self, brightness_scale=1.0):
-        self.queue.put(f'brightness:{brightness_scale}')
-        raise cherrypy.HTTPRedirect('/')
+    def start(self, config):
+        """Starts the cherrypy server and blocks."""
+        config = self.build_config(config)
 
-    @cherrypy.expose
-    def run_show(self, show_name=None):
-        if show_name is None or show_name not in self.shows:
-            raise cherrypy.HTTPError(400)
+        # When cherrypy publishes to 'stop' bus (e.g. Autoreloader) trigger shutdown event
+        cherrypy.engine.subscribe('stop', lambda: self.shutdown.set())
 
-        self.queue.put(f'run_show:{show_name}')
-        print(f'setting show to: {show_name}')
-
-        # XXX otherwise the runner.status() method hasn't had time to update
-        time.sleep(0.2)
-        raise cherrypy.HTTPRedirect('/')
+        # this method blocks until KeyboardInterrupt
+        cherrypy.quickstart(self, '/', config=config)
