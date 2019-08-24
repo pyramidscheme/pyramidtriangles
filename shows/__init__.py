@@ -7,7 +7,7 @@ from typing import List, Tuple, cast, Iterator, Type
 
 # These imports include submodules under the `shows` namespace.
 from .show import Show
-
+from .knobs import KnobType, KnobValue
 
 logger = logging.getLogger("pyramidtriangles")
 

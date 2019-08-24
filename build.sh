@@ -9,3 +9,7 @@ fi
 echo "Installing python dependencies with poetry"
 poetry install
 
+# Builds frontend
+cd js
+npm install
+npm run build

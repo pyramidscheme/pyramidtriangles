@@ -1,19 +1,18 @@
 import argparse
-import logging
-import sys
-import queue
-import threading
 import cherrypy
+import logging
 import netifaces
+import queue
+import sys
+import threading
 
+from core import ShowRunner, osc_serve
 from grid import Pyramid
 from model import Model
-import osc_serve
-import shows
 from model.sacn_model import sACN
 from model.simulator import SimulatorModel
-from web import TriangleWeb
-from show_runner import ShowRunner
+import shows
+from web import Web
 
 logger = logging.getLogger("pyramidtriangles")
 logger.propagate = False  # Prevent double logging
@@ -35,17 +34,22 @@ class TriangleServer:
         self.model = model
         self.pyramid = pyramid
 
-        self.queue = queue.LifoQueue()
-        self.shutdown = threading.Event()  # Used to signal a shutdown event
+        # Commands for the ShowRunner to process
+        self.command_queue = queue.Queue()
+        # Sequence of status updates from ShowRunner to Web
+        self.status_queue = queue.Queue()
+        # Event to synchronize shutting down
+        self.shutdown = threading.Event()
 
         self.runner = ShowRunner(
             pyramid=self.pyramid,
-            command_queue=self.queue,
+            command_queue=self.command_queue,
+            status_queue=self.status_queue,
             shutdown=self.shutdown,
             max_showtime=args.max_time,
             fail_hard=args.fail_hard)
 
-        self.osc_listener = threading.Thread(target=osc_serve.create_server, args=(self.shutdown, self.queue))
+        self.osc_listener = threading.Thread(target=osc_serve.create_server, args=(self.shutdown, self.command_queue))
 
         self.running = False
 
@@ -54,7 +58,7 @@ class TriangleServer:
             self.runner.next_show(args.shows[0])
 
     def start(self):
-        if self.running:
+        if self.runner.is_alive():
             logger.warning("start() called, but tri_grid is already running!")
             return
         self.osc_listener.start()
@@ -83,7 +87,7 @@ class TriangleServer:
         show_names = [name for (name, cls) in shows.load_shows()]
         print(f'shows: {show_names}')
 
-        # When control of the TriangleServer thread is passed to cherrypy, this registers a callback for shutdown
+        # When cherrypy publishes to 'stop' bus (e.g. Autoreloader) trigger stop for other threads.
         cherrypy.engine.subscribe('stop', self.stop)
         config = {
             'global': {
@@ -95,10 +99,9 @@ class TriangleServer:
             }
         }
 
+        web = Web(self.command_queue, self.status_queue)
         # this method blocks until KeyboardInterrupt
-        cherrypy.quickstart(TriangleWeb(self.queue, self.runner, show_names),
-                            '/',
-                            config=config)
+        web.start(config)
 
 
 def dump_panels(pyramid: Pyramid):
@@ -172,7 +175,6 @@ if __name__ == '__main__':
 
     model.activate(pyramid.cells)
 
-    # TriangleServer only needs model for model.stop()
     app = TriangleServer(model=model, pyramid=pyramid, args=args)
 
     try:

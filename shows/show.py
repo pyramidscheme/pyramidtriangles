@@ -1,6 +1,8 @@
 from abc import ABC, abstractmethod
 from typing import Generator
 
+from .knobs import KnobCollection
+
 # Will contain all available non-debug shows and debug shows.
 registry = set()
 debug_registry = set()
@@ -46,6 +48,17 @@ class Show(ABC):
         Returns a show's description when overridden, or empty string.
         """
         return ''
+
+    @property
+    def knobs(self) -> KnobCollection:
+        """
+        Returns the show's KnobMediator. Creates a new one if needed.
+        """
+        try:
+            return self.__knobs
+        except AttributeError:
+            self.__knobs = KnobCollection()
+            return self.__knobs
 
     # next_frame returns a generator of floats, so the function should `yield` float values.
     @abstractmethod

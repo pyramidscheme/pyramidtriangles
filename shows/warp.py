@@ -1,4 +1,5 @@
 from randomcolor import random_color
+from .knobs import HSVKnob
 from .show import Show
 from grid import Pyramid, inset
 
@@ -12,17 +13,19 @@ class Warp(Show):
         self.grid = pyramid.face
         self.frame_delay = frame_delay
 
+        self.knobs.register('Base Color', HSVKnob(default=random_color(hue='purple')))
+
         # Not sure of the proper formula for this, but allows running on normal or mega triangle.
         self.max_distance = 0
         while self.grid.select(inset(self.max_distance)):
             self.max_distance += 1
 
     def next_frame(self):
-        color = random_color(hue='purple')
-
         while True:
             for distance in range(self.max_distance):
                 self.grid.clear()
+
+                color = self.knobs['Base Color']
                 self.grid.set(inset(distance), color)
-                self.grid.go()
+
                 yield self.frame_delay

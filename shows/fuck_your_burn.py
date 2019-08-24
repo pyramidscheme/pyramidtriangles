@@ -3,6 +3,7 @@ from typing import Iterable
 
 from color import HSV
 from grid import Position, Pyramid
+from .knobs import ValueKnob, HSVKnob
 import ponzicolor
 from ponzicolor import Color
 from randomcolor import random_color
@@ -12,9 +13,11 @@ from .show import Show
 class FuckYourBurn(Show):
     def __init__(self, pyramid: Pyramid):
         self.grid = pyramid.panel
-        self.frame_delay = 1.0
-        self.background_color = HSV(0, 0, 0)
-        self.foreground_color = random_color(hue='green')
+
+        # Knobs to change for effect
+        self.knobs.register('Speed', ValueKnob(default=1.0, min=0.2, max=2.0, step=0.2))
+        self.knobs.register('Letter Color', HSVKnob(default=random_color(hue='purple')))
+        self.knobs.register('Background Color', HSVKnob(default=HSV(0, 0, 0)))
 
     @staticmethod
     def description() -> str:
@@ -97,16 +100,15 @@ class FuckYourBurn(Show):
 
     @property
     def background(self):
-        vals = self.background_color.hsv
+        vals = self.knobs['Background Color'].hsv
         return Color.from_hsv(ponzicolor.space.HSV(h=vals[0]*360, s=vals[1], v=vals[2]))
 
     @property
     def foreground(self):
-        vals = self.foreground_color.hsv
+        vals = self.knobs['Letter Color'].hsv
         return Color.from_hsv(ponzicolor.space.HSV(h=vals[0]*360, s=vals[1], v=vals[2]))
 
     def next_frame(self):
-
         letters = (self.fu, self.ck, self.yo, self.ur, self.bu, self.rn)
 
         self.grid.clear(self.background)
@@ -136,4 +138,4 @@ class FuckYourBurn(Show):
                 yield 0.01
 
             prev = curr
-            yield self.frame_delay
+            yield self.knobs['Speed']
