@@ -26,7 +26,7 @@ class Gear:
         # Draw the rest of the rings
         for r in range(self.size):
             col = (color + (r * self.colorchurn)) % maxColor
-            for coord in get_ring(self.pos, r):
+            for coord in get_ring(self.pos,r):
                 wh = gradient_wheel(col)
                 if Coordinate(*coord) in self.grid:
                     self.grid.set(Coordinate(*coord), RGB(*wh))

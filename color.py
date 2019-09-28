@@ -310,15 +310,15 @@ def HSI(h,s,i):
     assert is_hsi_hsl_tuple(t)
     return RGB( hsi2rgb(h,s,i) )
 
-def RGB(r,g,b, x=False):
+def RGB(r,g,b, x=False, brightness_override=None):
     "Create a new RGB color"
     t = (r,g,b)
     assert is_rgb_tuple(t)
-    return Color(rgb_to_hsv(t), x)
+    return Color(rgb_to_hsv(t), x, brightness_override=brightness_override)
 
-def HSV(h,s,v, x=False):
+def HSV(h,s,v, x=False, brightness_override=None):
     "Create a new HSV color"
-    return Color((h,s,v),x)
+    return Color((h,s,v),x, brightness_override=brightness_override)
 
 def HSL(h,s,l):
     "Create new HSL color"

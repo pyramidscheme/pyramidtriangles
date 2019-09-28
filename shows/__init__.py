@@ -10,7 +10,7 @@ from .left_to_right import LeftToRight
 from .left_to_right_and_back import LeftToRightAndBack
 from .gears import Gears
 from .marching_hexes import MarchingHexes
-#from .movingpyramids import MovingPyramids
+from .movingpyramids import MovingPyramids
 #from .one_by_one import OneByOne
 #from .rain import Rain
 from .random_cells import Random

@@ -3,6 +3,7 @@ from dudek.HelperFunctions import distance, ROTATE_CLOCK, ROTATE_COUNTER, ROTATE
 from grid import Coordinate
 from random import choice
 
+
 """
 Model to communicate with a Triangle simulator over a TCP socket
 
@@ -408,7 +409,7 @@ def tri_in_direction(coord, direction, distance=1):
     """
     for i in range(distance):
         coord = tri_nextdoor(coord, direction)
-    return coord
+    return Coordinate(*coord)
 
 
 def tri_nextdoor(coord, direction):
@@ -474,7 +475,7 @@ def get_ring(center_coord, size):
     results = []
     for i in range(6):
         for j in range(size):
-            results.append(t)
+            results.append(Coordinate(*t))
             t = tri_nextdoor(t, i)
     return results
 

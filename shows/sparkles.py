@@ -1,7 +1,9 @@
 from random import choices, randint
 
+from color import RGB
 from dudek.HelperClasses import Faders
 from dudek.HelperFunctions import randColor, oneIn, randColorRange
+from grid import every
 from .showbase import ShowBase
 
 
@@ -11,7 +13,31 @@ class Sparkles(ShowBase):
         self.faders = Faders(self.grid)
         self.frame_delay = frame_delay
         self.color = randColor()
-        self.spark_num = 45
+        self.spark_num = 15
+
+    def set_param(self, name, val):
+        if name == 'flash':
+            try:
+                self.grid.set(every, RGB(255, 0, 0))
+                self.grid.go()
+                old_fd = self.frame_delay 
+                self.frame_delay = 5
+                self.grid.go()
+                self.frame_delay = old_fd
+            except Exception as e:
+                print("Bad Hue flash!", val, e)
+
+        if name == 's_num':
+            try:
+                self.spark_num = int(val)
+            except ValueError:
+                print("Bad Speed Value!", val)
+        # Touch OSC Stuff
+        if name == 'speed':
+            try:
+                self.frame_delay = float(val)
+            except ValueError:
+                print("Bad Speed Value!", val)
 
     def next_frame(self):
 
