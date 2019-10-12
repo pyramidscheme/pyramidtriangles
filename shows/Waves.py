@@ -18,7 +18,6 @@ class Waves(ShowBase):
 
     def next_frame(self):
         while True:
-
             for x in range(self.min_x, self.max_x):
                 for y in range(self.min_y, self.max_y + 1):
                     att = (sin(tau * (x + self.min_x + self.time) * (y + self.min_y + self.time) / (self.max_y * self.max_x)) + 1) * 0.5

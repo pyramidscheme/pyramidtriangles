@@ -1,9 +1,8 @@
-from itertools import chain, cycle
+from itertools import cycle
 from typing import List
 
 from grid import Coordinate, Grid, Pyramid, every
-from color import HSV as hsv
-from color import RGB
+from color import HSV, RGB
 from .showbase import ShowBase
 
 
@@ -12,39 +11,30 @@ class IndexDebug(ShowBase):
         self.pyramid = pyramid.face
         self.frame_delay = frame_delay
         self.n_cells = len(self.grid)
-        self.hsv = hsv(1,1,1)
-
-
+        self.hsv = HSV(1, 1, 1)
 
     def set_param(self, name, val):
         if name == 'flash':
-            try:
-                self.grid.set(every, RGB(255, 0, 0))
-                self.grid.go()
-            except Exception as e:
-                print("Bad Hue flash!", val, e)
+            self.grid.set(every, RGB(255, 0, 0))
+            self.grid.go()
 
         if name == 'speed':
             try:
                 self.frame_delay = float(val)
-            except Exception as e:
+            except ValueError:
                 print("Bad Speed Value!", val)
 
         if name == "change_primary_hsv":
             try:
-                self.hsv = HSV(val[0],val[1],val[2])
-            except Exception as e:
+                self.hsv = HSV(*val)
+            except Exception:
                 print("Bad HSVColor Values!", val)
-
-
 
         if name == "change_secondary_hsv":
             try:
-                self.hsv = HSV(val[0],val[1],val[2])
-            except Exception as e:
+                self.hsv = HSV(*val)
+            except Exception:
                 print("Bad HSVColor Values!", val)
-
-
 
     def next_frame(self):
         self.pyramid.clear()
@@ -74,6 +64,6 @@ class IndexDebug(ShowBase):
                 universe = max(a.universe for a in cell.addresses)
                 hue = min(0.9, (universe - 1) * 0.1)
                 self.hsv.h = hue
-                self.grid.set(cell, self.hsv )
+                self.grid.set(cell, self.hsv)
                 self.grid.go()
                 yield self.frame_delay

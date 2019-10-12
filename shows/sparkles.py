@@ -32,6 +32,7 @@ class Sparkles(ShowBase):
                 self.spark_num = int(val)
             except ValueError:
                 print("Bad Speed Value!", val)
+
         # Touch OSC Stuff
         if name == 'speed':
             try:
@@ -40,7 +41,6 @@ class Sparkles(ShowBase):
                 print("Bad Speed Value!", val)
 
     def next_frame(self):
-
         for i in range(self.spark_num):
             self.add_new_sparkle()
 

@@ -3,7 +3,6 @@ from dudek.HelperFunctions import distance, ROTATE_CLOCK, ROTATE_COUNTER, ROTATE
 from grid import Coordinate
 from random import choice
 
-
 """
 Model to communicate with a Triangle simulator over a TCP socket
 
