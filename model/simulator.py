@@ -18,8 +18,11 @@ class SimulatorModel(ModelBase):
         self.hostname = hostname
         self.port = port
 
-        self.sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-        self.sock.connect((self.hostname, self.port))
+        try:
+            self.sock = socket.create_connection((self.hostname, self.port), 2.0)  # 2 second timeout
+        except ConnectionError as e:
+            e.filename = f"{self.hostname}:{self.port}"
+            raise
 
         # queue of 'dirty' messages to send
         self.message_queue = queue.SimpleQueue()
