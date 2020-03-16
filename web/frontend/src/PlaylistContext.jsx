@@ -1,5 +1,8 @@
 import React, { useState } from "react";
 
+// React context provider pattern to manage the state of the playlist (set/get) across any components nested within a
+// PlaylistProvider.
+
 const PlaylistStateContext = React.createContext();
 const PlaylistDispatchContext = React.createContext();
 

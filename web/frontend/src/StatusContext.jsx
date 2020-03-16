@@ -1,6 +1,9 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
 
+// React context provider pattern to manage the state of the playlist (set/get) across any components nested within a
+// PlaylistProvider.
+
 const updateSeconds = 10;
 
 const StatusStateContext = React.createContext();
@@ -25,6 +28,7 @@ function StatusProvider({children}) {
     setShowKnobs(knobs);
   };
 
+  // Decrements seconds down to zero then stops
   const decrementSeconds = () => {
     setSeconds(secs => secs > 0 ? secs - 1 : secs);
   };

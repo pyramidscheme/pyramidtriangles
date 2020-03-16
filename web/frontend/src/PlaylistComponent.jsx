@@ -1,6 +1,6 @@
 import React, { useEffect } from "react";
-import axios from "axios";
 import {
+  Button,
   ExpansionPanel, ExpansionPanelDetails, ExpansionPanelSummary,
   IconButton,
   List, ListItem, ListItemIcon, ListItemText,
@@ -8,27 +8,37 @@ import {
 } from "@material-ui/core";
 import DeleteIcon from '@material-ui/icons/Delete';
 import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
-import ShowClearerComponent from "./PlaylistClearComponent";
-import {usePlaylistState, useSetPlaylist} from "./PlaylistContext";
-import { deleteFromPlaylist, updatePlaylist } from "./PlaylistActions";
+import { usePlaylistState, useSetPlaylist } from "./PlaylistContext";
+import {clearPlaylist, deleteFromPlaylist, updatePlaylist} from "./PlaylistActions";
 import { withSnackbar } from "notistack";
-
-const updateSeconds = 5;
 
 function PlaylistComponent(props) {
   const setPlaylist = useSetPlaylist();
 
   useEffect(() => {
-    axios.get('playlist').then((resp) => setPlaylist(resp.data.playlist));
+    // Get playlist from the server initially.
+    updatePlaylist(setPlaylist).then();
+
+    // Every 5 seconds, updates the current playlist from the server.
     const interval = setInterval(
       () => updatePlaylist(setPlaylist),
-      updateSeconds * 1000);
+      5000);
     return () => clearInterval(interval);
   }, [setPlaylist]);
 
-  const clickRemove = async (entry_id) => {
+  const clickClear = async () => {
     try {
-      await deleteFromPlaylist(setPlaylist, entry_id);
+      await clearPlaylist(setPlaylist);
+    } catch (err) {
+      props.enqueueSnackbar(`Error clearing running shows: ${err.message}`, {
+        variant: 'error',
+      });
+    }
+  };
+
+  const clickRemove = async (entryId) => {
+    try {
+      await deleteFromPlaylist(setPlaylist, entryId);
     } catch (err) {
       props.enqueueSnackbar(`Error removing from playlist: ${err.message}`, {
         variant: 'error',
@@ -36,12 +46,12 @@ function PlaylistComponent(props) {
     }
   };
 
-  const renderEntry = (entry) => {
+  const playlistEntry = (entry, index) => {
     const [id, show] = entry;
 
     return (
       <ListItem color="primary">
-        <ListItemText primary={show} />
+        <ListItemText primary={`${index + 1}. ${show}`} />
 
         <ListItemIcon>
           <IconButton onClick={() => clickRemove(id)}>
@@ -53,18 +63,22 @@ function PlaylistComponent(props) {
   };
 
   const playlist = usePlaylistState();
+
   return (
-    <ExpansionPanel>
+    <ExpansionPanel defaultExpanded>
       <ExpansionPanelSummary expandIcon={<ExpandMoreIcon />}>
         <Typography variant="h5">Playlist</Typography>
       </ExpansionPanelSummary>
 
       <ExpansionPanelDetails>
         <div>
-          <ShowClearerComponent />
+          { playlist.length !== 0
+            ? <Button variant="contained" onClick={clickClear}>Clear</Button>
+            : null
+          }
 
           <List style={{listStyle: 'none'}} dense>
-            {playlist.map(entry => renderEntry(entry))}
+            {playlist.map(playlistEntry)}
           </List>
         </div>
       </ExpansionPanelDetails>

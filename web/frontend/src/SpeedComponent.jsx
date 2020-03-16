@@ -35,7 +35,7 @@ function SpeedComponent(props) {
 
   return (
     <Box mb={2}>
-      <Typography id="speed-slider" gutterBottom>
+      <Typography gutterBottom>
         Speed Multiplier (lower is faster)
       </Typography>
       <Slider

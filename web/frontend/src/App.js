@@ -43,8 +43,8 @@ export default function App() {
 
             <Grid item xs={6}>
               <Paper className={classes.settings}>
-                <PlaylistComponent />
                 <GlobalSettingsComponent />
+                <PlaylistComponent />
                 <ShowSettingsComponent />
               </Paper>
             </Grid>

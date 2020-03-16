@@ -24,7 +24,7 @@ function BrightnessComponent(props) {
     props.enqueueSnackbar(message, {variant: "error"});
   };
 
-  const handleChange= async (event, value) => {
+  const handleChange = async (event, value) => {
     try {
       await axios.post('brightness', {value: value});
       getBrightness().then();
@@ -43,6 +43,7 @@ function BrightnessComponent(props) {
         onChangeCommitted={handleChange}
         min={0}
         max={100}
+        valueLabelDisplay="auto"
       />
     </Box>
   );

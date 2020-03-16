@@ -1,5 +1,7 @@
 import axios from "axios";
 
+// Functions to call server REST endpoints and update playlist state.
+
 async function updatePlaylist(setPlaylist) {
   const response = await axios.get('playlist');
   setPlaylist(response.data.playlist);
@@ -10,8 +12,8 @@ async function addToPlaylist(setPlaylist, show) {
   await updatePlaylist(setPlaylist);
 }
 
-async function deleteFromPlaylist(setPlaylist, entry_id) {
-  await axios.delete(`playlist/${entry_id}`);
+async function deleteFromPlaylist(setPlaylist, entryId) {
+  await axios.delete(`playlist/${entryId}`);
   await updatePlaylist(setPlaylist);
 }
 
