@@ -15,7 +15,10 @@ class PlaylistController:
         # If no connections remain, the in-memory DB will be cleared.
         self.db = self._connect()
         with self.db:
-            self.db.execute('CREATE TABLE IF NOT EXISTS playlist (show text NOT NULL)')
+            self.db.execute('CREATE TABLE IF NOT EXISTS Playlist (show text NOT NULL)')
+            self.db.execute('''CREATE TABLE IF NOT EXISTS Current (playing integer,
+                                 FOREIGN KEY (playing) REFERENCES Playlist(ROWID))''')
+            self.db.execute('INSERT INTO Current VALUES (NULL)')
 
     def _connect(self) -> sqlite3.Connection:
         return sqlite3.connect(self.uri, uri=True)
@@ -24,27 +27,51 @@ class PlaylistController:
         """
         Returns the current playlist of shows. [(id, show),...].
         """
+        db = self._connect()
+        with db:
+            cursor = db.cursor()
+            cursor.execute('SELECT rowid, show FROM Playlist ORDER BY rowid')
+            return cursor.fetchall()
 
-        cursor = self._connect().cursor()
-        cursor.execute('SELECT rowid, show FROM playlist ORDER BY rowid')
-        return cursor.fetchall()
-
-    def pop(self) -> Optional[str]:
+    def current_entry(self) -> Optional[int]:
         """
-        Gets the top item from the playlist and removes it.
+        Returns the entry_id of the playing show, or None.
         """
         db = self._connect()
         with db:
             cursor = db.cursor()
-            cursor.execute('SELECT rowid, show FROM playlist ORDER BY rowid LIMIT 1')
-            row = cursor.fetchone()
-            if row is None:
+            cursor.execute('SELECT playing FROM Current LIMIT 1')
+            return cursor.fetchone()[0]
+
+    def next(self) -> Optional[str]:
+        """
+        Gets the next show from the playlist.
+
+        Uses the 'Current' table to determine the next show on the playlist, and advances the Current show.
+        If the Current show is NULL, selects the first item in the playlist.
+        If the playlist is empty, returns None.
+        """
+        db = self._connect()
+        with db:
+            cursor = db.cursor()
+            # Get next show from database.
+            cursor.execute('''SELECT rowid, show FROM Playlist WHERE rowid >
+                IFNULL((SELECT playing FROM Current LIMIT 1),-1)
+                LIMIT 1''')
+            next_show = cursor.fetchone()
+
+            # Handle looping to the first show if we've reached the end of the playlist.
+            if next_show is None:
+                cursor.execute('SELECT rowid, show FROM Playlist ORDER BY rowid LIMIT 1')
+                next_show = cursor.fetchone()
+
+            # next_show could still be None if Playlist is also empty
+            if next_show is None:
                 return None
 
-            (entry_id, show) = row
-            cursor.execute('DELETE FROM playlist WHERE rowid = (?)', (entry_id,))
-
-        return show
+            (entry_id, show) = next_show
+            cursor.execute('UPDATE Current SET playing = (?)', (entry_id,))
+            return show
 
     def put(self, show: str) -> None:
         """
@@ -52,7 +79,7 @@ class PlaylistController:
         """
         db = self._connect()
         with db:
-            db.execute('INSERT INTO playlist VALUES (?)', (show,))
+            db.execute('INSERT INTO Playlist VALUES (?)', (show,))
 
     def delete(self, entry_id: int) -> None:
         """
@@ -60,9 +87,10 @@ class PlaylistController:
         """
         db = self._connect()
         with db:
-            db.execute('DELETE FROM playlist WHERE rowid = (?)', (entry_id,))
+            db.execute('DELETE FROM Playlist WHERE rowid = (?)', (entry_id,))
 
     def clear(self) -> None:
         db = self._connect()
         with db:
-            db.execute('DELETE FROM playlist')
+            db.execute('DELETE FROM Playlist')
+            db.execute('UPDATE Current SET playing = NULL')

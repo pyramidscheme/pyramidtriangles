@@ -61,6 +61,10 @@ class Web:
     def start(self, config):
         """Starts the cherrypy server and blocks."""
         config = self.build_config(config)
+        cherrypy.config.update({
+            'log.access_file': 'log/cherrypy_access.log',
+            'log.screen': False,
+        })
 
         # When cherrypy publishes to 'stop' bus (e.g. Autoreloader) trigger shutdown event
         cherrypy.engine.subscribe('stop', lambda: self.shutdown.set())

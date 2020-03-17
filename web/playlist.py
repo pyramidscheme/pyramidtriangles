@@ -16,7 +16,10 @@ class Playlist:
         Returns the current playlist of shows. [(id, show),...].
         """
 
-        return {'playlist': self.playlist.current_playlist()}
+        return {
+            'playlist': self.playlist.current_playlist(),
+            'playing': self.playlist.current_entry(),
+        }
 
     def POST(self) -> None:
         """

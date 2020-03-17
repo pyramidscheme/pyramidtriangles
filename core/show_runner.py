@@ -180,7 +180,7 @@ class ShowRunner(Thread):
                 logger.warning(f"unknown show as argument: '{name}'")
 
         if not show_cls:
-            name = self.playlist.pop()
+            name = self.playlist.next()
             if name:
                 if name in self.shows:
                     show_cls = self.shows[name]
