@@ -1,13 +1,15 @@
 import React, { useEffect } from "react";
 import {
+  Box,
   Button,
-  ExpansionPanel, ExpansionPanelDetails, ExpansionPanelSummary,
+  ExpansionPanel, ExpansionPanelDetails, ExpansionPanelSummary, Grid,
   IconButton,
   List, ListItem, ListItemIcon, ListItemText,
   Typography
 } from "@material-ui/core";
 import DeleteIcon from '@material-ui/icons/Delete';
 import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
+import PlayArrowIcon from '@material-ui/icons/PlayArrow';
 import { usePlaylistState, useSetPlaylist } from "./PlaylistContext";
 import {clearPlaylist, deleteFromPlaylist, updatePlaylist} from "./PlaylistActions";
 import { withSnackbar } from "notistack";
@@ -46,12 +48,29 @@ function PlaylistComponent(props) {
     }
   };
 
-  const playlistEntry = (entry, index) => {
-    const [id, show] = entry;
+  const {playlist, playing} = usePlaylistState();
 
-    return (
-      <ListItem color="primary">
-        <ListItemText primary={`${index + 1}. ${show}`} />
+  let items = [];
+  // Loop to create a list entry for each playlist show.
+  playlist.forEach(([id, show]) => items.push(
+      <ListItem
+        color="primary"
+        divider
+        selected={playing === id}
+      >
+        { // PlayArrow icon for currently playing show.
+          playing === id ?
+          <ListItemIcon>
+            <PlayArrowIcon />
+          </ListItemIcon>
+          : ''
+        }
+
+        <ListItemText
+          // Inset item if another playlist entry is playing.
+          inset={playing && playing !== id}
+          primary={show}
+        />
 
         <ListItemIcon>
           <IconButton onClick={() => clickRemove(id)}>
@@ -59,10 +78,7 @@ function PlaylistComponent(props) {
           </IconButton>
         </ListItemIcon>
       </ListItem>
-    );
-  };
-
-  const playlist = usePlaylistState();
+  ));
 
   return (
     <ExpansionPanel defaultExpanded>
@@ -71,16 +87,23 @@ function PlaylistComponent(props) {
       </ExpansionPanelSummary>
 
       <ExpansionPanelDetails>
-        <div>
-          { playlist.length !== 0
-            ? <Button variant="contained" onClick={clickClear}>Clear</Button>
-            : null
+        <Grid
+          container
+          direction="column"
+          justify="center"
+        >
+          {
+            Array.isArray(playlist) && playlist.length
+              ? <Box marginBottom={2}>
+                  <Button variant="contained" onClick={clickClear}>Clear Playlist</Button>
+                </Box>
+              : <em>empty</em>
           }
 
-          <List style={{listStyle: 'none'}} dense>
-            {playlist.map(playlistEntry)}
+          <List dense>
+            {items}
           </List>
-        </div>
+        </Grid>
       </ExpansionPanelDetails>
     </ExpansionPanel>
   );

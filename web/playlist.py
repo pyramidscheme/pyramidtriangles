@@ -1,5 +1,5 @@
 import cherrypy
-from typing import List, Tuple, Mapping, Optional
+from typing import List, Tuple, Mapping, Optional, Union
 
 from core import PlaylistController
 
@@ -11,7 +11,7 @@ class Playlist:
     def __init__(self, playlist: PlaylistController):
         self.playlist = playlist
 
-    def GET(self) -> Mapping[str, List[Tuple[int, str]]]:
+    def GET(self) -> Mapping[str, Union[List[Tuple[int, str]], int]]:
         """
         Returns the current playlist of shows. [(id, show),...].
         """

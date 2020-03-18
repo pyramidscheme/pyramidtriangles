@@ -1,15 +1,20 @@
 import React from 'react';
-import { AppBar, Box, Grid, makeStyles, Paper, Toolbar, Typography } from "@material-ui/core";
 import './App.css';
-import { StatusProvider } from "./StatusContext";
-import StatusComponent from "./StatusComponent";
-import ShowSelectorComponent from "./ShowSelectorComponent";
-import PlaylistComponent from "./PlaylistComponent";
+import {AppBar, Grid, makeStyles, Paper, Toolbar, Typography} from "@material-ui/core";
+import {ThemeProvider} from "@material-ui/core/styles";
 import GlobalSettingsComponent from "./GlobalSettingsComponent";
-import ShowSettingsComponent from "./ShowSettingsComponent";
+import PlaylistComponent from "./PlaylistComponent";
 import {PlaylistProvider} from "./PlaylistContext";
+import ShowSelectorComponent from "./ShowSelectorComponent";
+import ShowSettingsComponent from "./ShowSettingsComponent";
+import StatusComponent from "./StatusComponent";
+import {StatusProvider} from "./StatusContext";
+import {theme} from "./Theme";
 
 const useStyles = makeStyles(theme => ({
+  container: {
+    background: '#2D0038',
+  },
   showSelector: {
     margin: 10,
     padding: theme.spacing(2),
@@ -23,9 +28,9 @@ export default function App() {
   const classes = useStyles();
 
   return (
-    <PlaylistProvider>
-      <StatusProvider>
-        <Box flexGrow={1}>
+    <ThemeProvider theme={theme}>
+      <PlaylistProvider>
+        <StatusProvider>
           <AppBar position="static">
             <Toolbar>
               <Typography variant="h6">
@@ -34,7 +39,7 @@ export default function App() {
             </Toolbar>
           </AppBar>
 
-          <Grid container spacing={3}>
+          <Grid container className={classes.container}>
             <Grid item xs={6}>
               <Paper className={classes.showSelector}>
                 <ShowSelectorComponent />
@@ -49,8 +54,8 @@ export default function App() {
               </Paper>
             </Grid>
           </Grid>
-        </Box>
-      </StatusProvider>
-    </PlaylistProvider>
+        </StatusProvider>
+      </PlaylistProvider>
+    </ThemeProvider>
   );
 }

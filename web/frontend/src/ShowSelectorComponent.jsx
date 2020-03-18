@@ -16,7 +16,6 @@ import { useStatusRefresh } from "./StatusContext";
 import { withSnackbar } from "notistack";
 
 function ShowSelectorComponent(props) {
-  const updateSeconds = 10;
   const [shows, setShows] = useState([]);
   const setPlaylist = useSetPlaylist();
   const statusRefresh = useStatusRefresh();
@@ -31,15 +30,19 @@ function ShowSelectorComponent(props) {
   };
 
   useEffect(() => {
+    // Get list of shows from server at startup.
     axios.get('shows').then((resp) => setShows(resp.data.shows));
-    const interval = setInterval(updateShowList, updateSeconds * 1000);
+
+    // Refresh list of shows from the server every 10 seconds.
+    const interval = setInterval(updateShowList, 10000);
     return () => clearInterval(interval);
   }, []);
 
   const clickPlay = async (show) => {
     try {
+      // Play the new show...
       await axios.post('shows', {value: show});
-      // Refresh status in 2 seconds.
+      // Then refresh status in 2 seconds.
       setTimeout(statusRefresh, 2000);
     } catch (err) {
       errorMessage(`Error running show ${show}: ${err.message}`);
@@ -54,33 +57,30 @@ function ShowSelectorComponent(props) {
     }
   };
 
-  const ShowListItem = ({show}) => {
-    return (
-      <ListItem color="primary">
-        <ListItemText primary={show.name} secondary={show.description} />
-
-        <ListItemIcon>
-          <IconButton onClick={() => clickPlay(show.name)}>
-            <PlayCircleOutlineIcon />
-          </IconButton>
-        </ListItemIcon>
-
-        <ListItemIcon>
-          <IconButton onClick={() => clickEnqueue(show.name)}>
-            <PlaylistAddIcon />
-          </IconButton>
-        </ListItemIcon>
-      </ListItem>
-    );
-  };
-
   return (
     <>
       <Typography variant='h5' gutterBottom>
         Show Selector
       </Typography>
+
       <List style={{listStyle: 'none'}} dense>
-        {shows.map(show => <ShowListItem show={show} />)}
+        {shows.map(show =>
+          <ListItem color="primary" divider>
+            <ListItemText primary={show.name} secondary={show.description} />
+
+            <ListItemIcon>
+              <IconButton onClick={() => clickPlay(show.name)}>
+                <PlayCircleOutlineIcon />
+              </IconButton>
+            </ListItemIcon>
+
+            <ListItemIcon>
+              <IconButton onClick={() => clickEnqueue(show.name)}>
+                <PlaylistAddIcon />
+              </IconButton>
+            </ListItemIcon>
+          </ListItem>
+          )}
       </List>
     </>
   );

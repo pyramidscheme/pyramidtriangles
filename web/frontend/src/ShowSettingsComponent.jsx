@@ -1,5 +1,5 @@
 import React from "react";
-import { ExpansionPanel, ExpansionPanelDetails, ExpansionPanelSummary, Typography } from "@material-ui/core";
+import {ExpansionPanel, ExpansionPanelDetails, ExpansionPanelSummary, Grid, Typography} from "@material-ui/core";
 import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
 import HsvKnob from "./HsvKnob";
 import ValueKnob from "./ValueKnob";
@@ -18,29 +18,29 @@ function ShowKnob(props) {
   }
 }
 
-function PanelContent({show, knobs}) {
-  if (Array.isArray(knobs) && knobs.length) {
-    return (
-      <div>
-        {knobs.map(knob => <ShowKnob show={show} {...knob} />)}
-      </div>
-    );
-  }
-
-  return <div>...{show} has no knobs to fiddle...</div>;
-}
-
 export default function ShowSettingsComponent() {
   const {show, showKnobs} = useStatusState();
 
   return (
     <ExpansionPanel defaultExpanded>
       <ExpansionPanelSummary expandIcon={<ExpandMoreIcon />}>
-        <Typography variant="h5">{show} Settings</Typography>
+        <Typography variant="h5">{show} Show Settings</Typography>
       </ExpansionPanelSummary>
 
       <ExpansionPanelDetails>
-        <PanelContent show={show} knobs={showKnobs} />
+        { Array.isArray(showKnobs) && showKnobs.length
+          ? <Grid
+              container
+              direction="column"
+              justify="center"
+            >
+              {showKnobs.map(knob =>
+                <ShowKnob show={show} {...knob} />)
+              }
+            </Grid>
+
+          : <em>{show} has no knobs to fiddle</em>
+        }
       </ExpansionPanelDetails>
     </ExpansionPanel>
   );

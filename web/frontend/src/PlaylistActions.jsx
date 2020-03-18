@@ -4,7 +4,7 @@ import axios from "axios";
 
 async function updatePlaylist(setPlaylist) {
   const response = await axios.get('playlist');
-  setPlaylist(response.data.playlist);
+  setPlaylist(response.data);
 }
 
 async function addToPlaylist(setPlaylist, show) {

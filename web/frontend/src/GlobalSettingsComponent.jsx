@@ -1,5 +1,5 @@
 import React from "react";
-import { ExpansionPanel, ExpansionPanelDetails, ExpansionPanelSummary, Typography } from "@material-ui/core";
+import {ExpansionPanel, ExpansionPanelDetails, ExpansionPanelSummary, Grid, Typography} from "@material-ui/core";
 import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
 import BrightnessComponent from "./BrightnessComponent";
 import ShowCycleComponent from "./ShowCycleComponent";
@@ -13,11 +13,15 @@ export default function GlobalSettingsComponent() {
       </ExpansionPanelSummary>
 
       <ExpansionPanelDetails>
-        <div>
+        <Grid
+          container
+          direction="column"
+          justify="center"
+        >
           <BrightnessComponent />
           <ShowCycleComponent />
           <SpeedComponent />
-        </div>
+        </Grid>
       </ExpansionPanelDetails>
     </ExpansionPanel>
   );
