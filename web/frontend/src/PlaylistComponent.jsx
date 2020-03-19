@@ -60,7 +60,7 @@ function PlaylistComponent(props) {
   };
 
   const {playlist, playing} = usePlaylistState();
-  const [open, setOpen] = useState(true);
+  const [open, setOpen] = useState(playlist.length);
 
   const handleClick = () => {
     setOpen(!open);
@@ -81,8 +81,7 @@ function PlaylistComponent(props) {
           direction="column"
           justify="center"
         >
-          {
-            Array.isArray(playlist) && playlist.length
+          { playlist.length
               ? <Box marginBottom={2}>
                   <Button variant="contained" onClick={clickClear}>Clear Playlist</Button>
                 </Box>
