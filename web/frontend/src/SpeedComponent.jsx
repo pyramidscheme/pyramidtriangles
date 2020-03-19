@@ -34,7 +34,7 @@ function SpeedComponent(props) {
   };
 
   return (
-    <Box mb={2}>
+    <Box marginBottom={2}>
       <Typography gutterBottom>
         Speed Multiplier (lower is faster)
       </Typography>

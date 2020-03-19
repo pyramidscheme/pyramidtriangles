@@ -34,7 +34,7 @@ function BrightnessComponent(props) {
   };
 
   return (
-    <Box mb={2}>
+    <Box marginBottom={2}>
       <Typography gutterBottom>
         Brightness
       </Typography>

@@ -1,9 +1,21 @@
-import React from "react";
-import {ExpansionPanel, ExpansionPanelDetails, ExpansionPanelSummary, Grid, Typography} from "@material-ui/core";
-import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
+import React, {useState} from "react";
+import {
+  Collapse,
+  Grid,
+  ListItem,
+  ListItemText, makeStyles,
+  Typography
+} from "@material-ui/core";
+import {ExpandLess, ExpandMore} from '@material-ui/icons';
 import HsvKnob from "./HsvKnob";
 import ValueKnob from "./ValueKnob";
 import { useStatusState } from "./StatusContext";
+
+const useStyles = makeStyles(theme => ({
+  grid: {
+    padding: theme.spacing(2),
+  },
+}));
 
 function ShowKnob(props) {
   const {show, type, name} = props;
@@ -19,29 +31,35 @@ function ShowKnob(props) {
 }
 
 export default function ShowSettingsComponent() {
+  const classes = useStyles();
   const {show, showKnobs} = useStatusState();
+  const [open, setOpen] = useState(true);
+
+  const handleClick = () => {
+    setOpen(!open);
+  };
 
   return (
-    <ExpansionPanel defaultExpanded>
-      <ExpansionPanelSummary expandIcon={<ExpandMoreIcon />}>
-        <Typography variant="h5">{show} Show Settings</Typography>
-      </ExpansionPanelSummary>
-
-      <ExpansionPanelDetails>
-        { Array.isArray(showKnobs) && showKnobs.length
-          ? <Grid
-              container
-              direction="column"
-              justify="center"
-            >
-              {showKnobs.map(knob =>
-                <ShowKnob show={show} {...knob} />)
-              }
-            </Grid>
-
-          : <em>{show} has no knobs to fiddle</em>
-        }
-      </ExpansionPanelDetails>
-    </ExpansionPanel>
+    <>
+      <ListItem button onClick={handleClick}>
+        <ListItemText>
+          <Typography variant="h5">{show} Show Settings</Typography>
+        </ListItemText>
+        {open ? <ExpandLess /> : <ExpandMore />}
+      </ListItem>
+      <Collapse in={open} timeout="auto" unmountOnExit>
+        <Grid
+          className={classes.grid}
+          container
+          direction="column"
+          justify="center"
+        >
+          { Array.isArray(showKnobs) && showKnobs.length
+              ? showKnobs.map(knob => <ShowKnob show={show} {...knob} />)
+              : <em>{show} has no knobs to fiddle</em>
+          }
+        </Grid>
+      </Collapse>
+    </>
   );
 }

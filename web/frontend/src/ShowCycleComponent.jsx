@@ -34,7 +34,7 @@ function ShowCycleComponent(props) {
   };
 
   return (
-    <Box mb={2}>
+    <Box marginBottom={2}>
       <Typography gutterBottom>
         Show duration (s)
       </Typography>

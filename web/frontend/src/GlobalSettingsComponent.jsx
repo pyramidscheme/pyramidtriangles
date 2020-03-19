@@ -1,19 +1,35 @@
-import React from "react";
-import {ExpansionPanel, ExpansionPanelDetails, ExpansionPanelSummary, Grid, Typography} from "@material-ui/core";
-import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
+import React, {useState} from "react";
+import {Collapse, ListItem, ListItemText, Grid, makeStyles, Typography} from "@material-ui/core";
+import {ExpandLess, ExpandMore} from '@material-ui/icons';
 import BrightnessComponent from "./BrightnessComponent";
 import ShowCycleComponent from "./ShowCycleComponent";
 import SpeedComponent from "./SpeedComponent";
 
-export default function GlobalSettingsComponent() {
-  return (
-    <ExpansionPanel defaultExpanded>
-      <ExpansionPanelSummary expandIcon={<ExpandMoreIcon />}>
-        <Typography variant="h5">Global Settings</Typography>
-      </ExpansionPanelSummary>
+const useStyles = makeStyles(theme => ({
+  grid: {
+    padding: theme.spacing(2),
+  },
+}));
 
-      <ExpansionPanelDetails>
+export default function GlobalSettingsComponent() {
+  const classes = useStyles();
+  const [open, setOpen] = useState(true);
+
+  const handleClick = () => {
+    setOpen(!open);
+  };
+
+  return (
+    <>
+      <ListItem button onClick={handleClick}>
+        <ListItemText>
+          <Typography variant="h5">Global Settings</Typography>
+        </ListItemText>
+        {open ? <ExpandLess /> : <ExpandMore />}
+      </ListItem>
+      <Collapse in={open} timeout="auto" unmountOnExit>
         <Grid
+          className={classes.grid}
           container
           direction="column"
           justify="center"
@@ -22,7 +38,7 @@ export default function GlobalSettingsComponent() {
           <ShowCycleComponent />
           <SpeedComponent />
         </Grid>
-      </ExpansionPanelDetails>
-    </ExpansionPanel>
+      </Collapse>
+    </>
   );
 }

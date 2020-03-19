@@ -1,20 +1,31 @@
-import React, { useEffect } from "react";
+import React, {useEffect, useState} from "react";
 import {
   Box,
   Button,
-  ExpansionPanel, ExpansionPanelDetails, ExpansionPanelSummary, Grid,
+  Collapse,
+  Grid,
   IconButton,
-  List, ListItem, ListItemIcon, ListItemText,
+  List,
+  ListItem,
+  ListItemIcon,
+  ListItemText, makeStyles,
   Typography
 } from "@material-ui/core";
+import {ExpandLess, ExpandMore} from '@material-ui/icons';
 import DeleteIcon from '@material-ui/icons/Delete';
-import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
 import PlayArrowIcon from '@material-ui/icons/PlayArrow';
 import { usePlaylistState, useSetPlaylist } from "./PlaylistContext";
 import {clearPlaylist, deleteFromPlaylist, updatePlaylist} from "./PlaylistActions";
 import { withSnackbar } from "notistack";
 
+const useStyles = makeStyles(theme => ({
+  grid: {
+    padding: theme.spacing(2),
+  },
+}));
+
 function PlaylistComponent(props) {
+  const classes = useStyles();
   const setPlaylist = useSetPlaylist();
 
   useEffect(() => {
@@ -49,45 +60,23 @@ function PlaylistComponent(props) {
   };
 
   const {playlist, playing} = usePlaylistState();
+  const [open, setOpen] = useState(true);
 
-  let items = [];
-  // Loop to create a list entry for each playlist show.
-  playlist.forEach(([id, show]) => items.push(
-      <ListItem
-        color="primary"
-        divider
-        selected={playing === id}
-      >
-        { // PlayArrow icon for currently playing show.
-          playing === id ?
-          <ListItemIcon>
-            <PlayArrowIcon />
-          </ListItemIcon>
-          : ''
-        }
-
-        <ListItemText
-          // Inset item if another playlist entry is playing.
-          inset={playing && playing !== id}
-          primary={show}
-        />
-
-        <ListItemIcon>
-          <IconButton onClick={() => clickRemove(id)}>
-            <DeleteIcon />
-          </IconButton>
-        </ListItemIcon>
-      </ListItem>
-  ));
+  const handleClick = () => {
+    setOpen(!open);
+  };
 
   return (
-    <ExpansionPanel defaultExpanded>
-      <ExpansionPanelSummary expandIcon={<ExpandMoreIcon />}>
-        <Typography variant="h5">Playlist</Typography>
-      </ExpansionPanelSummary>
-
-      <ExpansionPanelDetails>
+    <>
+      <ListItem button onClick={handleClick}>
+        <ListItemText>
+          <Typography variant="h5">Playlist</Typography>
+        </ListItemText>
+        {open ? <ExpandLess /> : <ExpandMore />}
+      </ListItem>
+      <Collapse in={open} timeout="auto" unmountOnExit>
         <Grid
+          className={classes.grid}
           container
           direction="column"
           justify="center"
@@ -101,11 +90,40 @@ function PlaylistComponent(props) {
           }
 
           <List dense>
-            {items}
+            {playlist.map(([id, show]) => {
+                return (
+                  <ListItem
+                    color="primary"
+                    divider
+                    selected={playing === id}
+                  >
+                    { // PlayArrow icon for currently playing show.
+                      playing === id ?
+                        <ListItemIcon>
+                          <PlayArrowIcon />
+                        </ListItemIcon>
+                        : ''
+                    }
+
+                    <ListItemText
+                      // Inset item if another playlist entry is playing.
+                      inset={playing && playing !== id}
+                      primary={show}
+                    />
+
+                    <ListItemIcon>
+                      <IconButton onClick={() => clickRemove(id)}>
+                        <DeleteIcon />
+                      </IconButton>
+                    </ListItemIcon>
+                  </ListItem>
+                );
+              })
+            }
           </List>
         </Grid>
-      </ExpansionPanelDetails>
-    </ExpansionPanel>
+      </Collapse>
+    </>
   );
 }
 

@@ -1,13 +1,17 @@
 import {createMuiTheme} from "@material-ui/core";
-import {purple, teal} from "@material-ui/core/colors";
+import {blue, purple} from "@material-ui/core/colors";
 
+const darkGray = '#202124';
+
+// Global theme options for app.
 export const theme = createMuiTheme({
   palette: {
     primary: purple,
-    secondary: teal,
+    secondary: blue,
     type: 'dark',
   },
   status: {
     danger: 'orange',
   },
+  background: darkGray,
 });
