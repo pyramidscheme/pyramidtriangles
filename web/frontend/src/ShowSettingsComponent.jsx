@@ -47,6 +47,7 @@ export default function ShowSettingsComponent() {
         </ListItemText>
         {open ? <ExpandLess /> : <ExpandMore />}
       </ListItem>
+
       <Collapse in={open} timeout="auto" unmountOnExit>
         <Grid
           className={classes.grid}

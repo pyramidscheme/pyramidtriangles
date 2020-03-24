@@ -17,8 +17,6 @@ import { withSnackbar } from "notistack";
 
 function ShowSelectorComponent(props) {
   const [shows, setShows] = useState([]);
-  const setPlaylist = useSetPlaylist();
-  const statusRefresh = useStatusRefresh();
 
   const updateShowList = async () => {
     const response = await axios.get('shows');
@@ -43,7 +41,7 @@ function ShowSelectorComponent(props) {
       // Play the new show...
       await axios.post('shows', {value: show});
       // Then refresh status in 2 seconds.
-      setTimeout(statusRefresh, 2000);
+      setTimeout(useStatusRefresh(), 2000);
     } catch (err) {
       errorMessage(`Error running show ${show}: ${err.message}`);
     }
@@ -51,10 +49,30 @@ function ShowSelectorComponent(props) {
 
   const clickEnqueue = async (show) => {
     try {
-      await addToPlaylist(setPlaylist, show);
+      await addToPlaylist(useSetPlaylist(), show);
     } catch (err) {
       errorMessage(`Error adding show ${show} to playlist: ${err.message}`);
     }
+  };
+
+  const PlayButton = ({show}) => {
+    return (
+      <ListItemIcon>
+        <IconButton onClick={() => clickPlay(show)}>
+          <PlayCircleOutlineIcon />
+        </IconButton>
+      </ListItemIcon>
+    );
+  };
+
+  const EnqueueButton = ({show}) => {
+    return (
+      <ListItemIcon>
+        <IconButton onClick={() => clickEnqueue(show)}>
+          <PlaylistAddIcon />
+        </IconButton>
+      </ListItemIcon>
+    );
   };
 
   return (
@@ -67,18 +85,8 @@ function ShowSelectorComponent(props) {
         {shows.map(show =>
           <ListItem color="primary" divider>
             <ListItemText primary={show.name} secondary={show.description} />
-
-            <ListItemIcon>
-              <IconButton onClick={() => clickPlay(show.name)}>
-                <PlayCircleOutlineIcon />
-              </IconButton>
-            </ListItemIcon>
-
-            <ListItemIcon>
-              <IconButton onClick={() => clickEnqueue(show.name)}>
-                <PlaylistAddIcon />
-              </IconButton>
-            </ListItemIcon>
+            <PlayButton show={show.name} />
+            <EnqueueButton show={show.name} />
           </ListItem>
           )}
       </List>

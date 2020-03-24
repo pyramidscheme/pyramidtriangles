@@ -60,7 +60,7 @@ function PlaylistComponent(props) {
   };
 
   const {playlist, playing} = usePlaylistState();
-  const [open, setOpen] = useState(playlist.length);
+  const [open, setOpen] = useState(true);
 
   const handleClick = () => {
     setOpen(!open);
@@ -74,6 +74,7 @@ function PlaylistComponent(props) {
         </ListItemText>
         {open ? <ExpandLess /> : <ExpandMore />}
       </ListItem>
+
       <Collapse in={open} timeout="auto" unmountOnExit>
         <Grid
           className={classes.grid}

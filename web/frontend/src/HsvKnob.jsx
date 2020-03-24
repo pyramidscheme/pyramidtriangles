@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import {Box, Button, Card, CardActions, CardContent, makeStyles, Typography} from "@material-ui/core";
+import { Button, Card, CardActions, CardContent, makeStyles, Typography } from "@material-ui/core";
 import { ChromePicker } from "react-color";
 import { hsl2hsv, hsv2hsl } from "./hsl2hsv";
 import axios from "axios";
