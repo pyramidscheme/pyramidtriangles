@@ -48,7 +48,6 @@ def test_controller_looping(playlist):
 
 def test_controller_empty(playlist):
     assert playlist.current_playlist() == []
-
     # Effective no-op
     playlist.clear()
     assert playlist.next() is None
@@ -57,3 +56,19 @@ def test_controller_empty(playlist):
 def test_controller_bad_delete_ignored(playlist):
     assert playlist.current_playlist() == []
     playlist.delete(0)
+
+
+def test_controller_set_next(playlist):
+    assert playlist.current_playlist() == []
+    playlist.set_next(0)
+    assert playlist.next() is None
+
+    playlist.put('Show 1')
+    playlist.put('Show 2')
+    playlist.put('Show 3')
+    playlist.put('Show 4')
+
+    for (i, show) in [(0, 'Show 1'), (1, 'Show 2'), (2, 'Show 3')]:
+        index = playlist.current_playlist()[i][0]
+        playlist.set_next(index)
+        assert playlist.next() == show

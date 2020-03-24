@@ -4,8 +4,6 @@ import axios from "axios";
 // React context provider pattern to manage the state of the playlist (set/get) across any components nested within a
 // PlaylistProvider.
 
-const updateSeconds = 10;
-
 const StatusStateContext = React.createContext();
 const StatusRefreshContext = React.createContext();
 
@@ -41,7 +39,7 @@ function StatusProvider({children}) {
       setSeconds(seconds_remaining);
       setShowKnobs(knobs);
     });
-    const statusInterval = setInterval(updateStatus,updateSeconds * 1000);
+    const statusInterval = setInterval(updateStatus, 2000);
     const countdownInterval = setInterval(decrementSeconds, 1000);
 
     return () => {

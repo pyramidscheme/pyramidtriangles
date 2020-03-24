@@ -1,5 +1,7 @@
 from dataclasses import dataclass
 
+from typing import Optional
+
 from shows.knobs import KnobValue
 
 
@@ -10,7 +12,7 @@ class BrightnessCommand:
 
 @dataclass(frozen=True)
 class RunShowCommand:
-    show: str
+    show: Optional[str]
 
 
 @dataclass(frozen=True)

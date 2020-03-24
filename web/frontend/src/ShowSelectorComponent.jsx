@@ -17,6 +17,8 @@ import { withSnackbar } from "notistack";
 
 function ShowSelectorComponent(props) {
   const [shows, setShows] = useState([]);
+  const statusRefresh = useStatusRefresh();
+  const setPlaylist = useSetPlaylist();
 
   const updateShowList = async () => {
     const response = await axios.get('shows');
@@ -41,7 +43,7 @@ function ShowSelectorComponent(props) {
       // Play the new show...
       await axios.post('shows', {value: show});
       // Then refresh status in 2 seconds.
-      setTimeout(useStatusRefresh(), 2000);
+      setTimeout(statusRefresh, 2000);
     } catch (err) {
       errorMessage(`Error running show ${show}: ${err.message}`);
     }
@@ -49,7 +51,7 @@ function ShowSelectorComponent(props) {
 
   const clickEnqueue = async (show) => {
     try {
-      await addToPlaylist(useSetPlaylist(), show);
+      await addToPlaylist(setPlaylist, show);
     } catch (err) {
       errorMessage(`Error adding show ${show} to playlist: ${err.message}`);
     }

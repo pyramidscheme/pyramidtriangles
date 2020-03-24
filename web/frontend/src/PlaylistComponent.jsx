@@ -15,7 +15,7 @@ import {ExpandLess, ExpandMore} from '@material-ui/icons';
 import DeleteIcon from '@material-ui/icons/Delete';
 import PlayArrowIcon from '@material-ui/icons/PlayArrow';
 import { usePlaylistState, useSetPlaylist } from "./PlaylistContext";
-import {clearPlaylist, deleteFromPlaylist, updatePlaylist} from "./PlaylistActions";
+import {clearPlaylist, deleteFromPlaylist, setPlayListNext, updatePlaylist} from "./PlaylistActions";
 import { withSnackbar } from "notistack";
 
 const useStyles = makeStyles(theme => ({
@@ -49,14 +49,35 @@ function PlaylistComponent(props) {
     }
   };
 
-  const clickRemove = async (entryId) => {
+  const clickPlay = async (entryId) => {
     try {
+      await setPlayListNext(setPlaylist, entryId);
+    } catch (err) {
+      props.enqueueSnackbar(`Error setting next playlist entry: ${err.message}`, {
+        variant: 'error',
+      })
+    }
+  };
+
+  const clickRemove = async (event, entryId) => {
+    try {
+      event.stopPropagation();
       await deleteFromPlaylist(setPlaylist, entryId);
     } catch (err) {
       props.enqueueSnackbar(`Error removing from playlist: ${err.message}`, {
         variant: 'error',
       });
     }
+  };
+
+  const DeleteButton = ({id}) => {
+    return (
+      <ListItemIcon>
+        <IconButton onClick={(e) => clickRemove(e, id)}>
+          <DeleteIcon />
+        </IconButton>
+      </ListItemIcon>
+    );
   };
 
   const {playlist, playing} = usePlaylistState();
@@ -91,14 +112,16 @@ function PlaylistComponent(props) {
 
           <List dense>
             {playlist.map(([id, show]) => {
+                const isPlaying = playing === id;
                 return (
                   <ListItem
-                    color="primary"
+                    button
                     divider
-                    selected={playing === id}
+                    onClick={() => clickPlay(id)}
+                    selected={isPlaying}
                   >
                     { // PlayArrow icon for currently playing show.
-                      playing === id ?
+                      isPlaying ?
                         <ListItemIcon>
                           <PlayArrowIcon />
                         </ListItemIcon>
@@ -107,15 +130,11 @@ function PlaylistComponent(props) {
 
                     <ListItemText
                       // Inset item if another playlist entry is playing.
-                      inset={playing && playing !== id}
+                      inset={playing && !isPlaying}
                       primary={show}
                     />
 
-                    <ListItemIcon>
-                      <IconButton onClick={() => clickRemove(id)}>
-                        <DeleteIcon />
-                      </IconButton>
-                    </ListItemIcon>
+                    <DeleteButton id={id} />
                   </ListItem>
                 );
               })

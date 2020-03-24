@@ -29,7 +29,7 @@ class Web:
         # These all are REST endpoints, path denoted by the variable name (e.g. /cycle_time).
         self.brightness = Brightness(command_queue, status)
         self.cycle_time = CycleTime(command_queue, status)
-        self.playlist = Playlist(self.db)
+        self.playlist = Playlist(command_queue, self.db)
         self.shows = Shows(command_queue)
         self.show_knob = ShowKnob(command_queue)
         self.speed = Speed(command_queue, status)

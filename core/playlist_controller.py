@@ -73,6 +73,23 @@ class PlaylistController:
             cursor.execute('UPDATE Current SET playing = (?)', (entry_id,))
             return show
 
+    def set_next(self, entry_id: int) -> None:
+        """
+        Sets the next show in the playlist to be {entry_id}.
+        """
+        db = self._connect()
+        with db:
+            cursor = db.cursor()
+            # Get previous show from database.
+            cursor.execute('SELECT MAX(rowid) FROM Playlist WHERE rowid < (?) LIMIT 1', (entry_id,))
+            prev_id = cursor.fetchone()[0]
+
+            # Case where show is first in list
+            if prev_id is None:
+                cursor.execute('UPDATE Current SET playing = NULL')
+            else:
+                cursor.execute('UPDATE Current SET playing = (?)', (prev_id,))
+
     def put(self, show: str) -> None:
         """
         Appends a show to the playlist.
@@ -81,13 +98,16 @@ class PlaylistController:
         with db:
             db.execute('INSERT INTO Playlist VALUES (?)', (show,))
 
-    def delete(self, entry_id: int) -> None:
+    def delete(self, entry_id: Optional[int]) -> None:
         """
         Deletes a show from the playlist by playlist/{entry_id}, or all shows by /playlist/.
         """
-        db = self._connect()
-        with db:
-            db.execute('DELETE FROM Playlist WHERE rowid = (?)', (entry_id,))
+        if entry_id is None:
+            self.clear()
+        else:
+            db = self._connect()
+            with db:
+                db.execute('DELETE FROM Playlist WHERE rowid = (?)', (entry_id,))
 
     def clear(self) -> None:
         db = self._connect()
