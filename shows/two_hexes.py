@@ -30,7 +30,7 @@ class TwoHexes(ShowBase):
                 #self.grid.set(h1, hsv1)
                 self.grid.set(h2, hsv2)
                 self.grid.go()
-                time.sleep(5)
+                yield 5.0
                 h1_c += 1
                 h2_c -= 1
 

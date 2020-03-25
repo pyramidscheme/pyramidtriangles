@@ -36,7 +36,7 @@ class LeftToRightAndBack(ShowBase):
                 hsv.h += .09
                 if hsv.h >= 1.0:
                     hsv.h = 0.0
-                time.sleep(0.8)
+                yield 0.8
 
             for i in reversed(pix_arr):
                 for ii in reversed(i):
@@ -45,4 +45,4 @@ class LeftToRightAndBack(ShowBase):
                 hsv.h += .09
                 if hsv.h >= 1.0:
                     hsv.h = 0.0
-                time.sleep(0.8)
+                yield 0.8

@@ -85,7 +85,7 @@ class Tendrils(ShowBase):
                 s3 = self.set_pix(s3, ccol, pix_arr)
                 s4 = self.set_pix(s4, ccol, pix_arr)
                 self.grid.go()
-                time.sleep(0.5)
+                yield 0.5
             s1[2] = self.inc_hsv_s(s1[2])
             s2[2] = self.inc_hsv_s(s2[2])
             s3[2] = self.inc_hsv_s(s3[2])

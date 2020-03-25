@@ -35,7 +35,7 @@ class LeftToRight(ShowBase):
                     print(ii)
                     ii(hsv)
                     self.grid.go()
-                time.sleep(0.2)
+                yield 0.2
 
                 hsv.h += .1
                 if hsv.h >= 1.0:
