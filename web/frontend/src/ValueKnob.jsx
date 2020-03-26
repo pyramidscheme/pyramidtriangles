@@ -5,12 +5,10 @@ import { withSnackbar } from "notistack";
 
 function ValueKnob(props) {
   const {show, name, value} = props;
+  const {min, max, step} = value;
+  const defaultValue = value.default;
 
-  const errorMessage = (message) => {
-    props.enqueueSnackbar(message, {variant: 'error'});
-  };
-
-  const handleValueChange = async (event, value) => {
+  const handleChange = async (event, value) => {
     try {
       await axios.post('show_knob', {
         show: show,
@@ -18,12 +16,10 @@ function ValueKnob(props) {
         value: value,
       });
     } catch (err) {
-      errorMessage(`Error adjusting show ${show} value ${name}: ${err.message}`);
+      props.enqueueSnackbar(`Error adjusting show ${show} value ${name}: ${err.message}`,
+        {variant: 'error'});
     }
   };
-
-  const {min, max, step} = value;
-  const defaultValue = value.default;
 
   return (
     <>
@@ -33,7 +29,7 @@ function ValueKnob(props) {
 
       <Slider
         defaultValue={defaultValue}
-        onChangeCommitted={handleValueChange}
+        onChangeCommitted={handleChange}
         valueLabelDisplay="auto"
         step={step}
         marks

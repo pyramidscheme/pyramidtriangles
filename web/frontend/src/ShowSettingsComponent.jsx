@@ -43,7 +43,7 @@ export default function ShowSettingsComponent() {
     <>
       <ListItem button onClick={handleClick}>
         <ListItemText>
-          <Typography variant="h5">{show} Show Settings</Typography>
+          <Typography variant="h5">{show} - Playing Show Settings</Typography>
         </ListItemText>
         {open ? <ExpandLess /> : <ExpandMore />}
       </ListItem>

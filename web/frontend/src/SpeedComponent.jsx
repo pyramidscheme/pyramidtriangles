@@ -6,19 +6,6 @@ import { withSnackbar } from "notistack";
 function SpeedComponent(props) {
   const [speed, setSpeed] = useState(1.0);
 
-  const errorMessage = (message) => {
-    props.enqueueSnackbar(message, {variant: 'error'});
-  };
-
-  const getSpeed = async () => {
-    try {
-      const response = await axios.get('speed');
-      setSpeed(response.data.value);
-    } catch(err) {
-      errorMessage(`Error requesting speed: ${err.message}`);
-    }
-  };
-
   // Load initial speed once.
   useEffect(() => {
     axios.get('speed').then((resp) => setSpeed(resp.data.value));
@@ -27,9 +14,8 @@ function SpeedComponent(props) {
   const handleChange = async (event, value) => {
     try {
       await axios.post('speed', {value: value});
-      getSpeed().then();
     } catch(err) {
-      errorMessage(`Error adjusting speed: ${err.message}`);
+      props.enqueueSnackbar(`Error adjusting speed: ${err.message}`, {variant: 'error'});
     }
   };
 
@@ -39,7 +25,8 @@ function SpeedComponent(props) {
         Speed Multiplier (lower is faster)
       </Typography>
       <Slider
-        defaultValue={speed}
+        value={speed}
+        onChange={(event, value) => setSpeed(value)}
         onChangeCommitted={handleChange}
         valueLabelDisplay="auto"
         step={0.25}

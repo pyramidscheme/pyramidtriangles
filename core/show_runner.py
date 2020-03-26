@@ -265,6 +265,7 @@ class ShowRunner(Thread):
             self.__brightness_scale = 1.0
         else:
             self.__brightness_scale = brightness
+        self.pyramid.face.model.brightness = self.__brightness_scale
         self._send_status()
 
     @property
