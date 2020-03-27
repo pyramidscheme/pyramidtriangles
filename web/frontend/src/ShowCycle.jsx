@@ -3,7 +3,7 @@ import axios from "axios";
 import { Box, Slider, Typography } from "@material-ui/core";
 import { withSnackbar } from "notistack";
 
-function ShowCycleComponent(props) {
+function ShowCycle(props) {
   const [cycleSeconds, setCycleSeconds] = useState(60);
 
   // Loads initial cycleSeconds once.
@@ -11,7 +11,11 @@ function ShowCycleComponent(props) {
     axios.get('cycle_time').then((resp) => setCycleSeconds(resp.data.value));
   }, []);
 
-  const handleChange = async (event, value) => {
+  const handleChange = (event, value) => {
+    setCycleSeconds(value);
+  };
+
+  const handleChangeCommitted = async (event, value) => {
     try {
       await axios.post('cycle_time', {value: value});
     } catch(err) {
@@ -26,8 +30,8 @@ function ShowCycleComponent(props) {
       </Typography>
       <Slider
         value={cycleSeconds}
-        onChange={(event, value) => setCycleSeconds(value)}
-        onChangeCommitted={handleChange}
+        onChange={handleChange}
+        onChangeCommitted={handleChangeCommitted}
         valueLabelDisplay="auto"
         step={10}
         marks
@@ -38,4 +42,4 @@ function ShowCycleComponent(props) {
   );
 }
 
-export default withSnackbar(ShowCycleComponent);
+export default withSnackbar(ShowCycle);

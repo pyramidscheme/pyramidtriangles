@@ -5,6 +5,10 @@ export default function ValueKnob({name, value, onChange}) {
   const {min, max, step} = value;
   const defaultValue = value.default;
 
+  const handleChangeCommitted = (event, value) => {
+    onChange(value);
+  };
+
   return (
     <>
       <Typography gutterBottom>
@@ -13,7 +17,7 @@ export default function ValueKnob({name, value, onChange}) {
 
       <Slider
         defaultValue={defaultValue}
-        onChangeCommitted={(e, value) => onChange(value)}
+        onChangeCommitted={handleChangeCommitted}
         valueLabelDisplay="auto"
         step={step}
         marks

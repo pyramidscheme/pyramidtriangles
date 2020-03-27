@@ -32,16 +32,6 @@ function PlaylistSettingsDialog(props) {
     props.enqueueSnackbar(msg, {variant: 'error'});
   };
 
-  const getPlaylistSettings = async () => {
-    try {
-      const resp = await axios.get(`playlist/entries/${entryId}`);
-      const newSetting = resp.data;
-      setSetting(oldSetting => oldSetting !== newSetting ? newSetting : oldSetting);
-    } catch (err) {
-      errorMessage(`Error getting settings for show: ${err.message}`);
-    }
-  };
-
   const changeCallback = (name) => {
     return async (value) => {
       try {

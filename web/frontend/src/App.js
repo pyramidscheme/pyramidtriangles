@@ -2,12 +2,12 @@ import React from 'react';
 import './App.css';
 import {AppBar, Grid, makeStyles, Paper, Toolbar, Typography} from "@material-ui/core";
 import {ThemeProvider} from "@material-ui/core/styles";
-import GlobalSettingsComponent from "./GlobalSettingsComponent";
-import PlaylistComponent from "./PlaylistComponent";
+import GlobalSettings from "./GlobalSettings";
+import PlaylistComponent from "./Playlist";
 import {PlaylistProvider} from "./PlaylistContext";
-import ShowSelectorComponent from "./ShowSelectorComponent";
+import ShowSelectorComponent from "./ShowSelector";
 import PlayingSettingsComponent from "./PlayingShowSettings";
-import StatusComponent from "./StatusComponent";
+import Status from "./Status";
 import {StatusProvider} from "./StatusContext";
 import {theme} from "./Theme";
 
@@ -32,7 +32,7 @@ const Layout = () => {
       <AppBar position="static">
         <Toolbar>
           <Typography variant="h6">
-            Triangle Shows | <StatusComponent />
+            Triangle Shows | <Status />
           </Typography>
         </Toolbar>
       </AppBar>
@@ -46,7 +46,7 @@ const Layout = () => {
 
         <Grid item xs={6}>
           <Paper className={classes.settings}>
-            <GlobalSettingsComponent />
+            <GlobalSettings />
           </Paper>
           <Paper className={classes.settings}>
             <PlaylistComponent />

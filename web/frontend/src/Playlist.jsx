@@ -21,7 +21,7 @@ const useStyles = makeStyles(theme => ({
   },
 }));
 
-function PlaylistComponent(props) {
+function Playlist(props) {
   const classes = useStyles();
 
   const {playlist, playing} = usePlaylistState();
@@ -72,7 +72,9 @@ function PlaylistComponent(props) {
           justify="center"
         >
           <Box marginBottom={2}>
-            <Button onClick={clickClear}>Clear Playlist</Button>
+            <Button onClick={clickClear}>
+              Clear Playlist
+            </Button>
           </Box>
           <List dense>
             {playlist.map(([entryId, show]) => {
@@ -90,4 +92,4 @@ function PlaylistComponent(props) {
   );
 }
 
-export default withSnackbar(PlaylistComponent);
+export default withSnackbar(Playlist);

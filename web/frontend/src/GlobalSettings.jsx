@@ -1,9 +1,9 @@
 import React, {useState} from "react";
 import {Collapse, ListItem, ListItemText, Grid, makeStyles, Typography} from "@material-ui/core";
 import {ExpandLess, ExpandMore} from '@material-ui/icons';
-import BrightnessComponent from "./BrightnessComponent";
-import ShowCycleComponent from "./ShowCycleComponent";
-import SpeedComponent from "./SpeedComponent";
+import BrightnessComponent from "./Brightness";
+import ShowCycleComponent from "./ShowCycle";
+import SpeedComponent from "./Speed";
 
 const useStyles = makeStyles(theme => ({
   grid: {
@@ -11,7 +11,7 @@ const useStyles = makeStyles(theme => ({
   },
 }));
 
-export default function GlobalSettingsComponent() {
+export default function GlobalSettings() {
   const classes = useStyles();
   const [open, setOpen] = useState(true);
 

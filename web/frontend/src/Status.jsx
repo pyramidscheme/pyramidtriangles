@@ -1,7 +1,7 @@
 import React from "react";
 import { useStatusState } from "./StatusContext";
 
-export default function StatusComponent() {
+export default function Status() {
   const {show, seconds} = useStatusState();
 
   // Can use React's Suspense component once it's released for data waiting.

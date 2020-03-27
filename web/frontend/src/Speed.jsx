@@ -3,7 +3,7 @@ import { Box, Slider, Typography } from "@material-ui/core";
 import axios from "axios";
 import { withSnackbar } from "notistack";
 
-function SpeedComponent(props) {
+function Speed(props) {
   const [speed, setSpeed] = useState(1.0);
 
   // Load initial speed once.
@@ -11,7 +11,11 @@ function SpeedComponent(props) {
     axios.get('speed').then((resp) => setSpeed(resp.data.value));
   }, []);
 
-  const handleChange = async (event, value) => {
+  const handleChange = (event, value) => {
+    setSpeed(value);
+  };
+
+  const handleChangeCommitted = async (event, value) => {
     try {
       await axios.post('speed', {value: value});
     } catch(err) {
@@ -26,8 +30,8 @@ function SpeedComponent(props) {
       </Typography>
       <Slider
         value={speed}
-        onChange={(event, value) => setSpeed(value)}
-        onChangeCommitted={handleChange}
+        onChange={handleChange}
+        onChangeCommitted={handleChangeCommitted}
         valueLabelDisplay="auto"
         step={0.25}
         marks
@@ -38,4 +42,4 @@ function SpeedComponent(props) {
   );
 }
 
-export default withSnackbar(SpeedComponent);
+export default withSnackbar(Speed);

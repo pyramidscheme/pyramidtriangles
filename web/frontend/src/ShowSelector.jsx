@@ -14,7 +14,7 @@ import { addToPlaylist } from "./PlaylistActions";
 import { useSetPlaylist } from "./PlaylistContext";
 import { withSnackbar } from "notistack";
 
-function ShowSelectorComponent(props) {
+function ShowSelector(props) {
   const [shows, setShows] = useState([]);
   const setPlaylist = useSetPlaylist();
 
@@ -93,4 +93,4 @@ function ShowSelectorComponent(props) {
   );
 }
 
-export default withSnackbar(ShowSelectorComponent);
+export default withSnackbar(ShowSelector);
