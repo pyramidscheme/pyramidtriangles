@@ -11,7 +11,7 @@ async function updatePlaylist(setPlaylist) {
   const response = await axios.get('playlist');
   const newPlaylist = response.data;
   // Attempts to only update when there's a substantive difference.
-  setPlaylist(oldPlaylist => oldPlaylist !== newPlaylist ? newPlaylist : oldPlaylist);
+  setPlaylist(oldPlaylist => oldPlaylist === newPlaylist ? oldPlaylist : newPlaylist);
 }
 
 async function addToPlaylist(setPlaylist, show) {

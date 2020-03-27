@@ -4,117 +4,22 @@ import {
   Button,
   Collapse,
   Grid,
-  IconButton,
   List,
   ListItem,
-  ListItemIcon,
   ListItemText, makeStyles,
   Typography
 } from "@material-ui/core";
 import {ExpandLess, ExpandMore} from '@material-ui/icons';
-import DeleteIcon from '@material-ui/icons/Delete';
-import TuneIcon from '@material-ui/icons/Tune';
-import PlayArrowIcon from '@material-ui/icons/PlayArrow';
-import { usePlaylistState, useSetPlaylist } from "./PlaylistContext";
-import {clearPlaylist, deleteFromPlaylist, setPlayListNext, updatePlaylist} from "./PlaylistActions";
-import PlaylistSettingsDialog from "./PlaylistSettingsDialog";
-import { withSnackbar } from "notistack";
-import axios from "axios";
+import {clearPlaylist, updatePlaylist} from "./PlaylistActions";
+import {usePlaylistState, useSetPlaylist} from "./PlaylistContext";
+import PlaylistItem from "./PlaylistItem";
+import {withSnackbar} from "notistack";
 
 const useStyles = makeStyles(theme => ({
   grid: {
     padding: theme.spacing(2),
   },
 }));
-
-const SettingsButton = ({onClick}) => {
-  return (
-    <ListItemIcon>
-      <IconButton onClick={onClick}>
-        <TuneIcon />
-      </IconButton>
-    </ListItemIcon>
-  );
-};
-
-const DeleteButton = ({onClick}) => {
-  return (
-    <ListItemIcon>
-      <IconButton onClick={onClick}>
-        <DeleteIcon />
-      </IconButton>
-    </ListItemIcon>
-  );
-};
-
-const PlaylistItem = (props) => {
-  const {entryId, show, isPlaying, setPlaylist} = props;
-  const [settingsOpen, setSettingsOpen] = useState(false);
-  const [showKnobs, setShowKnobs] = useState([]);
-
-  const errorMessage = (msg) => {
-    props.enqueueSnackbar(msg, {variant: 'error'})
-  };
-
-  useEffect(() => {
-    axios.get(`show_knob/${show}`)
-      .then((resp) => setShowKnobs(oldData => oldData !== resp.data ? resp.data : oldData))
-      .catch((err) => errorMessage(`Error fetching settings for show: ${err.message}`));
-  }, []);
-
-  const clickPlay = async () => {
-    try {
-      await setPlayListNext(setPlaylist, entryId);
-    } catch (err) {
-      errorMessage(`Error setting next playlist entry: ${err.message}`);
-    }
-  };
-
-  const openSettings = (event) => {
-    event.stopPropagation();
-    setSettingsOpen(true);
-  };
-
-  const clickRemove = async (event) => {
-    try {
-      event.stopPropagation();
-      await deleteFromPlaylist(setPlaylist, entryId);
-    } catch (err) {
-      errorMessage(`Error removing from playlist: ${err.message}`);
-    }
-  };
-
-  return (
-    <>
-      <ListItem
-        button
-        divider
-        onClick={clickPlay}
-        selected={isPlaying}
-      >
-        {isPlaying ? // PlayArrow icon for currently playing show.
-          <ListItemIcon>
-            <PlayArrowIcon />
-          </ListItemIcon>
-          : ''}
-
-        <ListItemText inset={!isPlaying} primary={show} />
-        {showKnobs.length ? <SettingsButton onClick={openSettings} /> : ''}
-        <DeleteButton onClick={clickRemove} />
-      </ListItem>
-      {showKnobs.length
-        ? <PlaylistSettingsDialog
-            open={settingsOpen}
-            setOpen={setSettingsOpen}
-            showKnobs={showKnobs}
-            entryId={entryId}
-            show={show}
-          />
-        : ''}
-
-    </>
-  );
-};
 
 function PlaylistComponent(props) {
   const classes = useStyles();
@@ -132,9 +37,7 @@ function PlaylistComponent(props) {
     updatePlaylist(setPlaylist).then();
 
     // Frequently updates the current playlist from the server.
-    const interval = setInterval(
-      () => updatePlaylist(setPlaylist),
-      4_000);
+    const interval = setInterval(() => updatePlaylist(setPlaylist), 4_000);
     return () => clearInterval(interval);
   }, [setPlaylist]);
 
@@ -169,7 +72,7 @@ function PlaylistComponent(props) {
           justify="center"
         >
           <Box marginBottom={2}>
-            <Button variant="contained" onClick={clickClear}>Clear Playlist</Button>
+            <Button onClick={clickClear}>Clear Playlist</Button>
           </Box>
           <List dense>
             {playlist.map(([entryId, show]) => {
@@ -178,7 +81,6 @@ function PlaylistComponent(props) {
                   entryId={entryId}
                   show={show}
                   isPlaying={playing === entryId}
-                  setPlaylist={setPlaylist}
                 />);
             })}
           </List>

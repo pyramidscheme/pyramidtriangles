@@ -24,7 +24,7 @@ function StatusProvider({children}) {
     setShow(show);
     setSeconds(seconds_remaining);
     // Attempts to only update when there's a substantive difference.
-    setShowKnobs(oldKnobs => oldKnobs !== knobs ? knobs : oldKnobs);
+    setShowKnobs(oldKnobs => oldKnobs === knobs ? oldKnobs : knobs);
   };
 
   // Decrements seconds down to zero then stops
@@ -41,8 +41,8 @@ function StatusProvider({children}) {
       setShowKnobs(knobs);
     });
 
-    const statusInterval = setInterval(updateStatus, 2000);
-    const countdownInterval = setInterval(decrementSeconds, 1000);
+    const statusInterval = setInterval(updateStatus, 2_000);
+    const countdownInterval = setInterval(decrementSeconds, 1_000);
 
     // Cleans up the intervals when component is unmounted.
     return () => {

@@ -1,12 +1,12 @@
 import React from 'react';
 import './App.css';
-import {AppBar, Grid, List, makeStyles, Paper, Toolbar, Typography} from "@material-ui/core";
+import {AppBar, Grid, makeStyles, Paper, Toolbar, Typography} from "@material-ui/core";
 import {ThemeProvider} from "@material-ui/core/styles";
 import GlobalSettingsComponent from "./GlobalSettingsComponent";
 import PlaylistComponent from "./PlaylistComponent";
 import {PlaylistProvider} from "./PlaylistContext";
 import ShowSelectorComponent from "./ShowSelectorComponent";
-import PlayingSettingsComponent from "./PlayingSettingsComponent";
+import PlayingSettingsComponent from "./PlayingShowSettings";
 import StatusComponent from "./StatusComponent";
 import {StatusProvider} from "./StatusContext";
 import {theme} from "./Theme";

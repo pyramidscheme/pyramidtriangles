@@ -22,7 +22,7 @@ function ShowSelectorComponent(props) {
     const response = await axios.get('shows');
     const newShows = response.data.shows;
     // Attempts to only update when there's a substantive difference.
-    setShows(oldShows => oldShows !== newShows ? newShows : oldShows);
+    setShows(oldShows => oldShows === newShows ? oldShows : newShows);
   };
 
   const errorMessage = (message) => {

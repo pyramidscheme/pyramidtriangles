@@ -1,4 +1,4 @@
-import React, {useEffect, useState} from "react";
+import React, {useState} from "react";
 import {
   Collapse,
   Grid,
@@ -18,7 +18,7 @@ const useStyles = makeStyles(theme => ({
   },
 }));
 
-function PlayingSettingsComponent(props) {
+function PlayingShowSettings(props) {
   const classes = useStyles();
   const {show, showKnobs} = useStatusState();
   const [open, setOpen] = useState(true);
@@ -72,4 +72,4 @@ function PlayingSettingsComponent(props) {
   );
 }
 
-export default withSnackbar(PlayingSettingsComponent);
+export default withSnackbar(PlayingShowSettings);

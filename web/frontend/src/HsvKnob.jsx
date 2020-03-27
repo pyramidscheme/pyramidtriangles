@@ -30,12 +30,18 @@ export default function HsvKnob({name, value, onChange}) {
     s: s,
     l: l,
   });
+
   const [backgroundColor, setBackgroundColor] = useState(`hsl(${h*360.0},${s*100}%,${l*100}%)`);
 
   const onChangeComplete = async (color) => {
-    setPickerColor(color.hsl);
-    setBackgroundColor(color.hex);
-    const [h, s, v] = hsl2hsv(pickerColor.h / 360.0, pickerColor.s, pickerColor.l);
+    // color.hsl has hue in [0,360], saturation in [0,1], luminosity in [0,1]
+
+    // Creating a new object to avoid getting extra parameters like alpha.
+    const colorHSL = {h: color.hsl.h, s: color.hsl.s, l: color.hsl.l,};
+    setPickerColor(colorHSL); // Needed for some reason to update selector cursor.
+    setBackgroundColor(`hsl(${colorHSL.h},${colorHSL.s*100}%,${colorHSL.l*100}%)`);
+
+    const [h, s, v] = hsl2hsv(colorHSL.h / 360.0, colorHSL.s, colorHSL.l);
     await onChange({h: h, s: s, v: v});
   };
 

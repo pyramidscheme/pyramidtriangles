@@ -1,6 +1,6 @@
 import React, {useEffect, useState} from "react";
-import {Button, Dialog, DialogActions, DialogContent, DialogTitle, Grid, makeStyles} from "@material-ui/core";
 import axios from "axios";
+import {Button, Dialog, DialogActions, DialogContent, DialogTitle, Grid, makeStyles} from "@material-ui/core";
 import ShowKnob from "./ShowKnob";
 import {withSnackbar} from "notistack";
 
@@ -23,6 +23,11 @@ function PlaylistSettingsDialog(props) {
     setOpen(false);
   };
 
+  // Get the settings once after loading.
+  useEffect(() => {
+    axios.get(`playlist/entries/${entryId}`).then(resp => setSetting(resp.data));
+  }, [entryId]);
+
   const errorMessage = (msg) => {
     props.enqueueSnackbar(msg, {variant: 'error'});
   };
@@ -37,17 +42,14 @@ function PlaylistSettingsDialog(props) {
     }
   };
 
-  useEffect(() => {
-    getPlaylistSettings().then();
-  }, []);
-
   const changeCallback = (name) => {
     return async (value) => {
       try {
         const newSetting = {[name]: value};
         await axios.put(`playlist/entries/${entryId}`, newSetting);
-        // setSetting(oldSetting => Object.assign(oldSetting, newSetting));
-        getPlaylistSettings().then();
+        setSetting(oldSetting => {
+          return {...oldSetting, ...newSetting};
+        });
       } catch (err) {
         errorMessage(`Error sending settings for show: ${err.message}`);
       }
@@ -69,7 +71,7 @@ function PlaylistSettingsDialog(props) {
           {
             showKnobs.map(knob => {
               // Use a playlist setting over a default.
-              if (setting.hasOwnProperty(knob.name)) {
+              if (setting.hasOwnProperty(knob.name) && knob.value.default !== setting[knob.name]) {
                 knob.value.default = setting[knob.name];
               }
               return <ShowKnob show={show} onChange={changeCallback(knob.name)} {...knob} />
@@ -78,7 +80,7 @@ function PlaylistSettingsDialog(props) {
         </Grid>
       </DialogContent>
       <DialogActions>
-        <Button autoFocus onClick={handleClose} color="primary">
+        <Button autoFocus onClick={handleClose}>
           Close
         </Button>
       </DialogActions>

@@ -10,7 +10,7 @@ export const hsv2hsl = (hue, sat, val) => {
     sat * val / ((hue=(2.0 - sat) * val) < 1.0 ? hue : 2.0 - hue),
 
     hue / 2.0 // Lightness is (2-sat)*val/2
-  ];
+  ].map(v => v ? v : 0.0);
 };
 
 export const hsl2hsv = (hue, sat, light) => {
@@ -19,5 +19,5 @@ export const hsl2hsv = (hue, sat, light) => {
     hue,
     2.0 * sat / (light + sat),
     light + sat
-  ];
+  ].map(v => v ? v : 0.0);
 };
