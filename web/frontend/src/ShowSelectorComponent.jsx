@@ -12,17 +12,17 @@ import PlayCircleOutlineIcon from '@material-ui/icons/PlayCircleOutline';
 import PlaylistAddIcon from '@material-ui/icons/PlaylistAdd';
 import { addToPlaylist } from "./PlaylistActions";
 import { useSetPlaylist } from "./PlaylistContext";
-import { useStatusRefresh } from "./StatusContext";
 import { withSnackbar } from "notistack";
 
 function ShowSelectorComponent(props) {
   const [shows, setShows] = useState([]);
-  const statusRefresh = useStatusRefresh();
   const setPlaylist = useSetPlaylist();
 
   const updateShowList = async () => {
     const response = await axios.get('shows');
-    setShows(response.data.shows);
+    const newShows = response.data.shows;
+    // Attempts to only update when there's a substantive difference.
+    setShows(oldShows => oldShows !== newShows ? newShows : oldShows);
   };
 
   const errorMessage = (message) => {
@@ -34,16 +34,13 @@ function ShowSelectorComponent(props) {
     axios.get('shows').then((resp) => setShows(resp.data.shows));
 
     // Refresh list of shows from the server every 10 seconds.
-    const interval = setInterval(updateShowList, 10000);
+    const interval = setInterval(updateShowList, 10_000);
     return () => clearInterval(interval);
   }, []);
 
   const clickPlay = async (show) => {
     try {
-      // Play the new show...
       await axios.post('shows', {value: show});
-      // Then refresh status in 2 seconds.
-      setTimeout(statusRefresh, 2000);
     } catch (err) {
       errorMessage(`Error running show ${show}: ${err.message}`);
     }

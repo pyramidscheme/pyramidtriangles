@@ -1,8 +1,12 @@
+from collections import defaultdict
 from queue import Queue
 import cherrypy
 
 from color import HSV
 from core.commands import ShowKnobCommand
+from grid import Pyramid
+from model.null_model import NullModel
+from shows import load_shows
 
 
 @cherrypy.expose
@@ -11,6 +15,36 @@ from core.commands import ShowKnobCommand
 class ShowKnob:
     def __init__(self, queue: Queue):
         self.queue = queue
+        self.knobs = defaultdict(list)
+
+        null_pyramid = Pyramid.build_single(NullModel())
+        for (name, cls) in load_shows():
+            show = cls(null_pyramid)
+            if show.knobs:
+                self.knobs[name] = show.knobs.json_array
+
+    @cherrypy.popargs('show')
+    def GET(self, show):
+        """
+        Returns the available knobs for the given show.
+
+        [{
+          name: 'Speed',
+          value: {
+            default: {
+              h: 1.0,
+              s: 1.0,
+              v: 1.0,
+            },
+          },
+          type: 'HSVKnob',
+        },
+        .
+        .
+        .
+        ]
+        """
+        return self.knobs[show]
 
     def POST(self) -> None:
         """

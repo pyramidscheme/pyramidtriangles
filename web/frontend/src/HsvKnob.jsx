@@ -1,9 +1,7 @@
 import React, { useState } from "react";
-import { Button, Card, CardActions, CardContent, makeStyles, Typography } from "@material-ui/core";
+import { Card, CardContent, makeStyles, Typography } from "@material-ui/core";
 import { ChromePicker } from "react-color";
 import { hsl2hsv, hsv2hsl } from "./hsl2hsv";
-import axios from "axios";
-import { withSnackbar } from "notistack";
 
 const useStyles = makeStyles(theme => ({
   root: {
@@ -21,8 +19,7 @@ const useStyles = makeStyles(theme => ({
   },
 }));
 
-function HsvKnob(props) {
-  const {show, name, value} = props;
+export default function HsvKnob({name, value, onChange}) {
   const classes = useStyles();
 
   // Unfortunately the picker uses HSL so we convert before/after.
@@ -35,22 +32,11 @@ function HsvKnob(props) {
   });
   const [backgroundColor, setBackgroundColor] = useState(`hsl(${h*360.0},${s*100}%,${l*100}%)`);
 
-  const errorMessage = (message) => {
-    props.enqueueSnackbar(message, {variant: 'error'});
-  };
-
-  const submitColorChange = async () => {
+  const onChangeComplete = async (color) => {
+    setPickerColor(color.hsl);
+    setBackgroundColor(color.hex);
     const [h, s, v] = hsl2hsv(pickerColor.h / 360.0, pickerColor.s, pickerColor.l);
-
-    try {
-      await axios.post('show_knob', {
-        show: show,
-        name: name,
-        value: {h: h, s: s, v: v},
-      });
-    } catch (err) {
-      errorMessage(`Error adjusting show ${show} color ${name}: ${err.message}`);
-    }
+    await onChange({h: h, s: s, v: v});
   };
 
   return (
@@ -64,19 +50,9 @@ function HsvKnob(props) {
           className={classes.picker}
           disableAlpha
           color={pickerColor}
-          onChangeComplete={(color) => {
-            setPickerColor(color.hsl);
-            setBackgroundColor(color.hex);
-          }}
+          onChangeComplete={onChangeComplete}
         />
       </CardContent>
-      <CardActions>
-        <Button variant="contained" onClick={submitColorChange}>
-          Set Color
-        </Button>
-      </CardActions>
     </Card>
   );
 }
-
-export default withSnackbar(HsvKnob);

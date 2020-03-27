@@ -78,7 +78,7 @@ class KnobMediator(MutableMapping):
         return iter(self.values)
 
     @property
-    def json_object(self) -> Iterable[Mapping[str, Union[str, Dict[str, float]]]]:
+    def json_array(self) -> Iterable[Mapping[str, Union[str, Dict[str, float]]]]:
         """
         Produces a sequence of nested dict which can be directly JSON encoded.
 

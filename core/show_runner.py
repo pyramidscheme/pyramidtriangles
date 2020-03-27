@@ -101,7 +101,7 @@ class ShowRunner(Thread):
 
         knobs_json = []
         if self.show.knobs:
-            knobs_json = self.show.knobs.json_object
+            knobs_json = self.show.knobs.json_array
 
         # Represents JSON status object
         return Status(

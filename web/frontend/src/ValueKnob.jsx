@@ -1,25 +1,9 @@
 import React from "react";
 import { Slider, Typography } from "@material-ui/core";
-import axios from "axios";
-import { withSnackbar } from "notistack";
 
-function ValueKnob(props) {
-  const {show, name, value} = props;
+export default function ValueKnob({name, value, onChange}) {
   const {min, max, step} = value;
   const defaultValue = value.default;
-
-  const handleChange = async (event, value) => {
-    try {
-      await axios.post('show_knob', {
-        show: show,
-        name: name,
-        value: value,
-      });
-    } catch (err) {
-      props.enqueueSnackbar(`Error adjusting show ${show} value ${name}: ${err.message}`,
-        {variant: 'error'});
-    }
-  };
 
   return (
     <>
@@ -29,7 +13,7 @@ function ValueKnob(props) {
 
       <Slider
         defaultValue={defaultValue}
-        onChangeCommitted={handleChange}
+        onChangeCommitted={(e, value) => onChange(value)}
         valueLabelDisplay="auto"
         step={step}
         marks
@@ -39,5 +23,3 @@ function ValueKnob(props) {
     </>
   );
 }
-
-export default withSnackbar(ValueKnob);

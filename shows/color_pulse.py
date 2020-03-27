@@ -1,6 +1,6 @@
 from color import HSV
 from .knobs import KnobFactory
-from grid import every, inset
+from grid import every, inset, Pyramid
 from .showbase import ShowBase
 
 
@@ -9,7 +9,7 @@ class ColorPulse(ShowBase):
     def description() -> str:
         return 'pulse where saturation gently fluctuates'
 
-    def __init__(self, pyramid, frame_delay=0.2):
+    def __init__(self, pyramid: Pyramid, frame_delay: float = 0.2):
         self.grid = pyramid.face
         self.frame_delay = frame_delay
 

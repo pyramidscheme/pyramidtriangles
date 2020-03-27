@@ -5,7 +5,9 @@ import axios from "axios";
 
 async function updatePlaylist(setPlaylist) {
   const response = await axios.get('playlist');
-  setPlaylist(response.data);
+  const newPlaylist = response.data;
+  // Attempts to only update when there's a substantive difference.
+  setPlaylist(oldPlaylist => oldPlaylist !== newPlaylist ? newPlaylist : oldPlaylist);
 }
 
 async function addToPlaylist(setPlaylist, show) {
@@ -14,7 +16,7 @@ async function addToPlaylist(setPlaylist, show) {
 }
 
 async function deleteFromPlaylist(setPlaylist, entryId) {
-  await axios.delete(`playlist/${entryId}`);
+  await axios.delete(`playlist/entries/${entryId}`);
   await updatePlaylist(setPlaylist);
 }
 

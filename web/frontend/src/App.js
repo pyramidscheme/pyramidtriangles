@@ -6,7 +6,7 @@ import GlobalSettingsComponent from "./GlobalSettingsComponent";
 import PlaylistComponent from "./PlaylistComponent";
 import {PlaylistProvider} from "./PlaylistContext";
 import ShowSelectorComponent from "./ShowSelectorComponent";
-import ShowSettingsComponent from "./ShowSettingsComponent";
+import PlayingSettingsComponent from "./PlayingSettingsComponent";
 import StatusComponent from "./StatusComponent";
 import {StatusProvider} from "./StatusContext";
 import {theme} from "./Theme";
@@ -46,11 +46,13 @@ const Layout = () => {
 
         <Grid item xs={6}>
           <Paper className={classes.settings}>
-            <List component="nav">
-              <GlobalSettingsComponent />
-              <PlaylistComponent />
-              <ShowSettingsComponent />
-            </List>
+            <GlobalSettingsComponent />
+          </Paper>
+          <Paper className={classes.settings}>
+            <PlaylistComponent />
+          </Paper>
+          <Paper className={classes.settings}>
+            <PlayingSettingsComponent />
           </Paper>
         </Grid>
       </Grid>

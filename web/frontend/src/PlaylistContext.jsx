@@ -8,6 +8,7 @@ const PlaylistDispatchContext = React.createContext();
 
 function PlaylistProvider({children}) {
   const [playlist, setPlaylist] = useState({'playlist':[]});
+
   return (
     <PlaylistStateContext.Provider value={playlist}>
       <PlaylistDispatchContext.Provider value={setPlaylist}>

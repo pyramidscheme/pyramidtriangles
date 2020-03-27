@@ -23,7 +23,8 @@ function StatusProvider({children}) {
     const {show, seconds_remaining, knobs} = response.data;
     setShow(show);
     setSeconds(seconds_remaining);
-    setShowKnobs(knobs);
+    // Attempts to only update when there's a substantive difference.
+    setShowKnobs(oldKnobs => oldKnobs !== knobs ? knobs : oldKnobs);
   };
 
   // Decrements seconds down to zero then stops
@@ -39,9 +40,11 @@ function StatusProvider({children}) {
       setSeconds(seconds_remaining);
       setShowKnobs(knobs);
     });
+
     const statusInterval = setInterval(updateStatus, 2000);
     const countdownInterval = setInterval(decrementSeconds, 1000);
 
+    // Cleans up the intervals when component is unmounted.
     return () => {
       clearInterval(statusInterval);
       clearInterval(countdownInterval);
@@ -57,6 +60,7 @@ function StatusProvider({children}) {
   );
 }
 
+// Returns state accessors (not setters) for status: {show, seconds, showKnobs}.
 function useStatusState() {
   const context = React.useContext(StatusStateContext);
   if (context === undefined) {
@@ -65,7 +69,7 @@ function useStatusState() {
   return context;
 }
 
-// Children can force an update with 'useStatusRefresh'.
+// Children components can force an update with 'useStatusRefresh'.
 function useStatusRefresh() {
   const context = React.useContext(StatusRefreshContext);
   if (context === undefined) {

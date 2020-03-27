@@ -27,7 +27,7 @@ export default function GlobalSettingsComponent() {
         </ListItemText>
         {open ? <ExpandLess /> : <ExpandMore />}
       </ListItem>
-      <Collapse in={open} timeout="auto" unmountOnExit>
+      <Collapse in={open} timeout="auto">
         <Grid
           className={classes.grid}
           container

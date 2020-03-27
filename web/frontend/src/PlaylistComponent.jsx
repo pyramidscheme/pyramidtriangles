@@ -13,10 +13,13 @@ import {
 } from "@material-ui/core";
 import {ExpandLess, ExpandMore} from '@material-ui/icons';
 import DeleteIcon from '@material-ui/icons/Delete';
+import TuneIcon from '@material-ui/icons/Tune';
 import PlayArrowIcon from '@material-ui/icons/PlayArrow';
 import { usePlaylistState, useSetPlaylist } from "./PlaylistContext";
 import {clearPlaylist, deleteFromPlaylist, setPlayListNext, updatePlaylist} from "./PlaylistActions";
+import PlaylistSettingsDialog from "./PlaylistSettingsDialog";
 import { withSnackbar } from "notistack";
+import axios from "axios";
 
 const useStyles = makeStyles(theme => ({
   grid: {
@@ -24,18 +27,114 @@ const useStyles = makeStyles(theme => ({
   },
 }));
 
+const SettingsButton = ({onClick}) => {
+  return (
+    <ListItemIcon>
+      <IconButton onClick={onClick}>
+        <TuneIcon />
+      </IconButton>
+    </ListItemIcon>
+  );
+};
+
+const DeleteButton = ({onClick}) => {
+  return (
+    <ListItemIcon>
+      <IconButton onClick={onClick}>
+        <DeleteIcon />
+      </IconButton>
+    </ListItemIcon>
+  );
+};
+
+const PlaylistItem = (props) => {
+  const {entryId, show, isPlaying, setPlaylist} = props;
+  const [settingsOpen, setSettingsOpen] = useState(false);
+  const [showKnobs, setShowKnobs] = useState([]);
+
+  const errorMessage = (msg) => {
+    props.enqueueSnackbar(msg, {variant: 'error'})
+  };
+
+  useEffect(() => {
+    axios.get(`show_knob/${show}`)
+      .then((resp) => setShowKnobs(oldData => oldData !== resp.data ? resp.data : oldData))
+      .catch((err) => errorMessage(`Error fetching settings for show: ${err.message}`));
+  }, []);
+
+  const clickPlay = async () => {
+    try {
+      await setPlayListNext(setPlaylist, entryId);
+    } catch (err) {
+      errorMessage(`Error setting next playlist entry: ${err.message}`);
+    }
+  };
+
+  const openSettings = (event) => {
+    event.stopPropagation();
+    setSettingsOpen(true);
+  };
+
+  const clickRemove = async (event) => {
+    try {
+      event.stopPropagation();
+      await deleteFromPlaylist(setPlaylist, entryId);
+    } catch (err) {
+      errorMessage(`Error removing from playlist: ${err.message}`);
+    }
+  };
+
+  return (
+    <>
+      <ListItem
+        button
+        divider
+        onClick={clickPlay}
+        selected={isPlaying}
+      >
+        {isPlaying ? // PlayArrow icon for currently playing show.
+          <ListItemIcon>
+            <PlayArrowIcon />
+          </ListItemIcon>
+          : ''}
+
+        <ListItemText inset={!isPlaying} primary={show} />
+        {showKnobs.length ? <SettingsButton onClick={openSettings} /> : ''}
+        <DeleteButton onClick={clickRemove} />
+      </ListItem>
+      {showKnobs.length
+        ? <PlaylistSettingsDialog
+            open={settingsOpen}
+            setOpen={setSettingsOpen}
+            showKnobs={showKnobs}
+            entryId={entryId}
+            show={show}
+          />
+        : ''}
+
+    </>
+  );
+};
+
 function PlaylistComponent(props) {
   const classes = useStyles();
+
+  const {playlist, playing} = usePlaylistState();
   const setPlaylist = useSetPlaylist();
+
+  const [open, setOpen] = useState(true);
+
+  // Playlist expands/collapses when playlist length changes.
+  useEffect(() => setOpen(playlist.length > 0), [playlist.length]);
 
   useEffect(() => {
     // Get playlist from the server initially.
     updatePlaylist(setPlaylist).then();
 
-    // Every 5 seconds, updates the current playlist from the server.
+    // Frequently updates the current playlist from the server.
     const interval = setInterval(
       () => updatePlaylist(setPlaylist),
-      5000);
+      4_000);
     return () => clearInterval(interval);
   }, [setPlaylist]);
 
@@ -48,40 +147,6 @@ function PlaylistComponent(props) {
       });
     }
   };
-
-  const clickPlay = async (entryId) => {
-    try {
-      await setPlayListNext(setPlaylist, entryId);
-    } catch (err) {
-      props.enqueueSnackbar(`Error setting next playlist entry: ${err.message}`, {
-        variant: 'error',
-      })
-    }
-  };
-
-  const clickRemove = async (event, entryId) => {
-    try {
-      event.stopPropagation();
-      await deleteFromPlaylist(setPlaylist, entryId);
-    } catch (err) {
-      props.enqueueSnackbar(`Error removing from playlist: ${err.message}`, {
-        variant: 'error',
-      });
-    }
-  };
-
-  const DeleteButton = ({id}) => {
-    return (
-      <ListItemIcon>
-        <IconButton onClick={(e) => clickRemove(e, id)}>
-          <DeleteIcon />
-        </IconButton>
-      </ListItemIcon>
-    );
-  };
-
-  const {playlist, playing} = usePlaylistState();
-  const [open, setOpen] = useState(true);
 
   const handleClick = () => {
     setOpen(!open);
@@ -96,49 +161,26 @@ function PlaylistComponent(props) {
         {open ? <ExpandLess /> : <ExpandMore />}
       </ListItem>
 
-      <Collapse in={open} timeout="auto" unmountOnExit>
+      <Collapse in={open} timeout="auto">
         <Grid
           className={classes.grid}
           container
           direction="column"
           justify="center"
         >
-          { playlist.length
-              ? <Box marginBottom={2}>
-                  <Button variant="contained" onClick={clickClear}>Clear Playlist</Button>
-                </Box>
-              : <em>empty</em>
-          }
-
+          <Box marginBottom={2}>
+            <Button variant="contained" onClick={clickClear}>Clear Playlist</Button>
+          </Box>
           <List dense>
-            {playlist.map(([id, show]) => {
-                const isPlaying = playing === id;
-                return (
-                  <ListItem
-                    button
-                    divider
-                    onClick={() => clickPlay(id)}
-                    selected={isPlaying}
-                  >
-                    { // PlayArrow icon for currently playing show.
-                      isPlaying ?
-                        <ListItemIcon>
-                          <PlayArrowIcon />
-                        </ListItemIcon>
-                        : ''
-                    }
-
-                    <ListItemText
-                      // Inset item if another playlist entry is playing.
-                      inset={playing && !isPlaying}
-                      primary={show}
-                    />
-
-                    <DeleteButton id={id} />
-                  </ListItem>
-                );
-              })
-            }
+            {playlist.map(([entryId, show]) => {
+              return (
+                <PlaylistItem
+                  entryId={entryId}
+                  show={show}
+                  isPlaying={playing === entryId}
+                  setPlaylist={setPlaylist}
+                />);
+            })}
           </List>
         </Grid>
       </Collapse>
