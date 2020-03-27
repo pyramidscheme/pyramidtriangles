@@ -3,6 +3,10 @@ import axios from "axios";
 // Functions to call server REST endpoints and update playlist state.
 // setPlaylist argument is the React callback to modify playlist state in components.
 
+const sleep = (milliseconds) => {
+  return new Promise(resolve => setTimeout(resolve, milliseconds))
+};
+
 async function updatePlaylist(setPlaylist) {
   const response = await axios.get('playlist');
   const newPlaylist = response.data;
@@ -27,6 +31,7 @@ async function clearPlaylist(setPlaylist) {
 
 async function setPlayListNext(setPlaylist, entryId) {
   await axios.put('playlist', {entry_id: entryId});
+  await sleep(300); // There should be a small delay so the correct entry is highlighted.
   await updatePlaylist(setPlaylist);
 }
 
