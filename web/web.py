@@ -1,3 +1,4 @@
+import logging
 import threading
 from queue import Queue
 from os import path
@@ -13,6 +14,8 @@ from .shows import Shows
 from .show_knob import ShowKnob
 from .speed import Speed
 from .status import Status
+
+logging.getLogger("cherrypy").propagate = False
 
 
 class Web:
