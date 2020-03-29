@@ -67,7 +67,7 @@ class Web:
         })
 
         # When cherrypy publishes to 'stop' bus (e.g. Autoreloader) trigger shutdown event
-        cherrypy.engine.subscribe('stop', lambda: self.shutdown.set())
+        cherrypy.engine.subscribe('stop', self.shutdown.set)
 
         # this method blocks until KeyboardInterrupt
         cherrypy.quickstart(self, '/', config=config)

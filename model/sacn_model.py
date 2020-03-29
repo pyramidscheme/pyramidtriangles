@@ -7,6 +7,7 @@ have one LED each.
 import logging
 from typing import Iterable, Type
 
+import cherrypy
 import sacn
 
 from grid import Address, Cell
@@ -22,6 +23,9 @@ class sACN(ModelBase):
             bind_address=bind_address,
             universeDiscovery=False,
         )
+
+        # When cherrypy publishes to 'stop' bus (e.g. Autoreloader) trigger shutdown event
+        cherrypy.engine.subscribe('stop', self.stop)
 
         self.leds = []
 
