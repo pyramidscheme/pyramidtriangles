@@ -1,4 +1,5 @@
 import logging
+import sqlite3
 from dataclasses import dataclass
 from queue import Queue, Empty
 import time
@@ -180,7 +181,11 @@ class ShowRunner(Thread):
                 logger.warning(f"unknown show as argument: '{name}'")
 
         if not show_cls:
-            name = self.playlist.next()
+            try:
+                name = self.playlist.next()
+            except sqlite3.OperationalError as e:
+                logger.error(f"error getting next show from playlist, skipping: {e}")
+
             if name:
                 if name in self.shows:
                     show_cls = self.shows[name]
