@@ -4,11 +4,11 @@ import ValueKnob from "./ValueKnob";
 
 // Component for adjusting a show's knobs (settings). Defers to specific type component implementation.
 export default function ShowKnob(props) {
-  const {type} = props;
+  const { type } = props;
   switch (type) {
-    case 'HSVKnob':
+    case "HSVKnob":
       return <HsvKnob {...props} />;
-    case 'ValueKnob':
+    case "ValueKnob":
       return <ValueKnob {...props} />;
     default:
       throw new Error(`Unrecognized knob type ${type}`);

@@ -1,8 +1,8 @@
 import React from "react";
 import { Slider, Typography } from "@material-ui/core";
 
-export default function ValueKnob({name, value, onChange}) {
-  const {min, max, step} = value;
+export default function ValueKnob({ name, value, onChange }) {
+  const { min, max, step } = value;
   const defaultValue = value.default;
 
   const handleChangeCommitted = (event, value) => {
@@ -11,9 +11,7 @@ export default function ValueKnob({name, value, onChange}) {
 
   return (
     <>
-      <Typography gutterBottom>
-        {name}
-      </Typography>
+      <Typography gutterBottom>{name}</Typography>
 
       <Slider
         defaultValue={defaultValue}

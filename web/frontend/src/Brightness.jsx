@@ -7,7 +7,7 @@ export default function Brightness() {
 
   // Loads initial brightness once.
   useEffect(() => {
-    axios.get('brightness').then((resp) => setBrightness(resp.data.value));
+    axios.get("brightness").then((resp) => setBrightness(resp.data.value));
   }, []);
 
   const handleClick = (event, value) => {
@@ -15,14 +15,12 @@ export default function Brightness() {
   };
 
   const handleChange = async (event, value) => {
-    await axios.post('brightness', {value: value});
+    await axios.post("brightness", { value: value });
   };
 
   return (
     <Box marginBottom={2}>
-      <Typography gutterBottom>
-        Brightness
-      </Typography>
+      <Typography gutterBottom>Brightness</Typography>
       <Slider
         value={brightness}
         onChange={handleClick}
@@ -33,4 +31,4 @@ export default function Brightness() {
       />
     </Box>
   );
-};
+}

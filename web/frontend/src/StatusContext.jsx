@@ -1,4 +1,4 @@
-import React, {createContext, useContext, useEffect, useState} from "react";
+import React, { createContext, useContext, useEffect, useState } from "react";
 import axios from "axios";
 
 // React context provider pattern to manage the state of the playlist (set/get) across any components nested within a
@@ -10,14 +10,14 @@ const StatusStateContext = createContext({});
 function usePlayingStatus() {
   const context = useContext(StatusStateContext);
   if (context === undefined) {
-    throw new Error('useStatusState must be used within a StatusStateContext')
+    throw new Error("useStatusState must be used within a StatusStateContext");
   }
   return context;
 }
 
 // Status pertains to the running show.
-function StatusProvider({children}) {
-  const [show, setShow] = useState('');
+function StatusProvider({ children }) {
+  const [show, setShow] = useState("");
   const [seconds, setSeconds] = useState(0);
   const [showKnobs, setShowKnobs] = useState([]);
 
@@ -28,23 +28,23 @@ function StatusProvider({children}) {
   };
 
   const updateStatus = async () => {
-    const response = await axios.get('status');
-    const {show, seconds_remaining, knobs} = response.data;
+    const response = await axios.get("status");
+    const { show, seconds_remaining, knobs } = response.data;
     setShow(show);
     setSeconds(seconds_remaining);
     // Attempts to only update when there's a substantive difference.
-    setShowKnobs(oldKnobs => oldKnobs === knobs ? oldKnobs : knobs);
+    setShowKnobs((oldKnobs) => (oldKnobs === knobs ? oldKnobs : knobs));
   };
 
   // Decrements seconds down to zero then stops.
   const decrementSeconds = () => {
-    setSeconds(secs => secs > 0 ? secs - 1 : secs);
+    setSeconds((secs) => (secs > 0 ? secs - 1 : secs));
   };
 
   useEffect(() => {
     // This code duplication is annoying but seems the easiest way to avoid an react-hooks/exhaustive-deps error.
-    axios.get('status').then((resp) => {
-      const {show, seconds_remaining, knobs} = resp.data;
+    axios.get("status").then((resp) => {
+      const { show, seconds_remaining, knobs } = resp.data;
       setShow(show);
       setSeconds(seconds_remaining);
       setShowKnobs(knobs);
@@ -57,7 +57,7 @@ function StatusProvider({children}) {
     return () => {
       clearInterval(statusInterval);
       clearInterval(countdownInterval);
-    }
+    };
   }, []);
 
   return (
@@ -67,4 +67,4 @@ function StatusProvider({children}) {
   );
 }
 
-export {StatusProvider, usePlayingStatus};
+export { StatusProvider, usePlayingStatus };

@@ -7,7 +7,7 @@ export default function ShowCycle() {
 
   // Loads initial cycleSeconds once.
   useEffect(() => {
-    axios.get('cycle_time').then((resp) => setCycleSeconds(resp.data.value));
+    axios.get("cycle_time").then((resp) => setCycleSeconds(resp.data.value));
   }, []);
 
   const handleChange = (event, value) => {
@@ -15,14 +15,12 @@ export default function ShowCycle() {
   };
 
   const handleChangeCommitted = async (event, value) => {
-    await axios.post('cycle_time', {value: value});
+    await axios.post("cycle_time", { value: value });
   };
 
   return (
     <Box marginBottom={2}>
-      <Typography gutterBottom>
-        Show duration (s)
-      </Typography>
+      <Typography gutterBottom>Show duration (s)</Typography>
       <Slider
         value={cycleSeconds}
         onChange={handleChange}
@@ -35,4 +33,4 @@ export default function ShowCycle() {
       />
     </Box>
   );
-};
+}

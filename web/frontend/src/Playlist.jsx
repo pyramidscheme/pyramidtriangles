@@ -1,4 +1,4 @@
-import React, {useEffect, useState} from "react";
+import React, { useEffect, useState } from "react";
 import {
   Box,
   Button,
@@ -6,15 +6,16 @@ import {
   Grid,
   List,
   ListItem,
-  ListItemText, makeStyles,
-  Typography
+  ListItemText,
+  makeStyles,
+  Typography,
 } from "@material-ui/core";
-import {ExpandLess, ExpandMore} from '@material-ui/icons';
-import {clearPlaylist, updatePlaylist} from "./PlaylistActions";
-import {usePlaylist, useSetPlaylist} from "./PlaylistContext";
+import { ExpandLess, ExpandMore } from "@material-ui/icons";
+import { clearPlaylist, updatePlaylist } from "./PlaylistActions";
+import { usePlaylist, useSetPlaylist } from "./PlaylistContext";
 import PlaylistItem from "./PlaylistItem";
 
-const useStyles = makeStyles(theme => ({
+const useStyles = makeStyles((theme) => ({
   grid: {
     padding: theme.spacing(2),
   },
@@ -23,7 +24,7 @@ const useStyles = makeStyles(theme => ({
 export default function Playlist() {
   const classes = useStyles();
 
-  const {playlist, playing} = usePlaylist();
+  const { playlist, playing } = usePlaylist();
   const setPlaylist = useSetPlaylist();
 
   const [open, setOpen] = useState(true);
@@ -69,9 +70,7 @@ export default function Playlist() {
           justify="center"
         >
           <Box marginBottom={2}>
-            <Button onClick={clickClear}>
-              Clear Playlist
-            </Button>
+            <Button onClick={clickClear}>Clear Playlist</Button>
           </Box>
           <List dense>
             {playlist.map(([entryId, show]) => {
@@ -80,11 +79,12 @@ export default function Playlist() {
                   entryId={entryId}
                   show={show}
                   isPlaying={playing === entryId}
-                />);
+                />
+              );
             })}
           </List>
         </Grid>
       </Collapse>
     </>
   );
-};
+}

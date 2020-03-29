@@ -7,7 +7,7 @@ export default function Speed() {
 
   // Load initial speed once.
   useEffect(() => {
-    axios.get('speed').then((resp) => setSpeed(resp.data.value));
+    axios.get("speed").then((resp) => setSpeed(resp.data.value));
   }, []);
 
   const handleChange = (event, value) => {
@@ -15,14 +15,12 @@ export default function Speed() {
   };
 
   const handleChangeCommitted = async (event, value) => {
-    await axios.post('speed', {value: value});
+    await axios.post("speed", { value: value });
   };
 
   return (
     <Box marginBottom={2}>
-      <Typography gutterBottom>
-        Speed Multiplier (lower is faster)
-      </Typography>
+      <Typography gutterBottom>Speed Multiplier (lower is faster)</Typography>
       <Slider
         value={speed}
         onChange={handleChange}
@@ -35,4 +33,4 @@ export default function Speed() {
       />
     </Box>
   );
-};
+}

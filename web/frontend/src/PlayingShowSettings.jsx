@@ -1,18 +1,19 @@
-import React, {useState} from "react";
+import React, { useState } from "react";
 import {
   Box,
   Collapse,
   Grid,
   ListItem,
-  ListItemText, makeStyles,
-  Typography
+  ListItemText,
+  makeStyles,
+  Typography,
 } from "@material-ui/core";
-import {ExpandLess, ExpandMore} from '@material-ui/icons';
-import {usePlayingStatus} from "./StatusContext";
+import { ExpandLess, ExpandMore } from "@material-ui/icons";
+import { usePlayingStatus } from "./StatusContext";
 import ShowKnob from "./ShowKnob";
 import axios from "axios";
 
-const useStyles = makeStyles(theme => ({
+const useStyles = makeStyles((theme) => ({
   grid: {
     padding: theme.spacing(2),
   },
@@ -20,7 +21,7 @@ const useStyles = makeStyles(theme => ({
 
 export default function PlayingShowSettings() {
   const classes = useStyles();
-  const {show, showKnobs} = usePlayingStatus();
+  const { show, showKnobs } = usePlayingStatus();
   const [open, setOpen] = useState(true);
 
   const handleClick = () => {
@@ -29,7 +30,7 @@ export default function PlayingShowSettings() {
 
   const changeCallback = (show, name) => {
     return async (value) => {
-      await axios.post('show_knob', {
+      await axios.post("show_knob", {
         show: show,
         name: name,
         value: value,
@@ -58,15 +59,16 @@ export default function PlayingShowSettings() {
           justify="center"
         >
           <Box paddingBottom={2}>
-            <Typography variant="subtitle2"><em>Note: affects running show and choices are not saved</em></Typography>
+            <Typography variant="subtitle2">
+              <em>Note: affects running show and choices are not saved</em>
+            </Typography>
           </Box>
 
-          {
-            showKnobs.map(knob =>
-              <ShowKnob onChange={changeCallback(show, knob.name)} {...knob} />)
-          }
+          {showKnobs.map((knob) => (
+            <ShowKnob onChange={changeCallback(show, knob.name)} {...knob} />
+          ))}
         </Grid>
       </Collapse>
     </>
   );
-};
+}

@@ -1,17 +1,24 @@
-import React from 'react';
-import './App.css';
-import {AppBar, Grid, makeStyles, Paper, Toolbar, Typography} from "@material-ui/core";
-import {ThemeProvider} from "@material-ui/core/styles";
+import React from "react";
+import "./App.css";
+import {
+  AppBar,
+  Grid,
+  makeStyles,
+  Paper,
+  Toolbar,
+  Typography,
+} from "@material-ui/core";
+import { ThemeProvider } from "@material-ui/core/styles";
 import GlobalSettings from "./GlobalSettings";
 import Playlist from "./Playlist";
-import {PlaylistProvider} from "./PlaylistContext";
+import { PlaylistProvider } from "./PlaylistContext";
 import ShowSelector from "./ShowSelector";
 import PlayingSettings from "./PlayingShowSettings";
 import Status from "./Status";
-import {StatusProvider} from "./StatusContext";
-import {theme} from "./Theme";
+import { StatusProvider } from "./StatusContext";
+import { theme } from "./Theme";
 
-const useStyles = makeStyles(theme => ({
+const useStyles = makeStyles((theme) => ({
   container: {
     background: theme.background,
   },

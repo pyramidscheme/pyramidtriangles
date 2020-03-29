@@ -1,15 +1,29 @@
-import React, {useEffect, useState} from "react";
+import React, { useEffect, useState } from "react";
 import axios from "axios";
-import {Button, Dialog, DialogActions, DialogContent, DialogTitle, Grid, makeStyles} from "@material-ui/core";
+import {
+  Button,
+  Dialog,
+  DialogActions,
+  DialogContent,
+  DialogTitle,
+  Grid,
+  makeStyles,
+} from "@material-ui/core";
 import ShowKnob from "./ShowKnob";
 
-const useStyles = makeStyles(theme => ({
+const useStyles = makeStyles((theme) => ({
   grid: {
     padding: theme.spacing(2),
   },
 }));
 
-export default function PlaylistSettingsDialog({entryId, show, open, setOpen, showKnobs}) {
+export default function PlaylistSettingsDialog({
+  entryId,
+  show,
+  open,
+  setOpen,
+  showKnobs,
+}) {
   const classes = useStyles();
   const [setting, setSetting] = useState({});
 
@@ -19,22 +33,22 @@ export default function PlaylistSettingsDialog({entryId, show, open, setOpen, sh
 
   // Get the settings once after loading.
   useEffect(() => {
-    axios.get(`playlist/entries/${entryId}`).then(resp => setSetting(resp.data));
+    axios
+      .get(`playlist/entries/${entryId}`)
+      .then((resp) => setSetting(resp.data));
   }, [entryId]);
 
   const changeCallback = (name) => {
     return async (value) => {
-      const newSetting = {[name]: value};
+      const newSetting = { [name]: value };
       await axios.put(`playlist/entries/${entryId}`, newSetting);
-      setSetting(oldSetting => oldSetting.assign(newSetting));
+      setSetting((oldSetting) => oldSetting.assign(newSetting));
     };
   };
 
   return (
     <Dialog onClose={handleClose} open={open}>
-      <DialogTitle onClose={handleClose}>
-        Settings for {show}
-      </DialogTitle>
+      <DialogTitle onClose={handleClose}>Settings for {show}</DialogTitle>
       <DialogContent>
         <Grid
           className={classes.grid}
@@ -42,15 +56,16 @@ export default function PlaylistSettingsDialog({entryId, show, open, setOpen, sh
           direction="column"
           justify="center"
         >
-          {
-            showKnobs.map(knob => {
-              // Use a playlist setting over a default.
-              if (setting.hasOwnProperty(knob.name) && knob.value.default !== setting[knob.name]) {
-                knob.value.default = setting[knob.name];
-              }
-              return <ShowKnob onChange={changeCallback(knob.name)} {...knob} />
-            })
-          }
+          {showKnobs.map((knob) => {
+            // Use a playlist setting over a default.
+            if (
+              setting.hasOwnProperty(knob.name) &&
+              knob.value.default !== setting[knob.name]
+            ) {
+              knob.value.default = setting[knob.name];
+            }
+            return <ShowKnob onChange={changeCallback(knob.name)} {...knob} />;
+          })}
         </Grid>
       </DialogContent>
       <DialogActions>
@@ -60,4 +75,4 @@ export default function PlaylistSettingsDialog({entryId, show, open, setOpen, sh
       </DialogActions>
     </Dialog>
   );
-};
+}

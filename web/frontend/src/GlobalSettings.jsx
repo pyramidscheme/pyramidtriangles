@@ -1,11 +1,18 @@
-import React, {useState} from "react";
-import {Collapse, ListItem, ListItemText, Grid, makeStyles, Typography} from "@material-ui/core";
-import {ExpandLess, ExpandMore} from '@material-ui/icons';
+import React, { useState } from "react";
+import {
+  Collapse,
+  ListItem,
+  ListItemText,
+  Grid,
+  makeStyles,
+  Typography,
+} from "@material-ui/core";
+import { ExpandLess, ExpandMore } from "@material-ui/icons";
 import Brightness from "./Brightness";
 import ShowCycle from "./ShowCycle";
 import Speed from "./Speed";
 
-const useStyles = makeStyles(theme => ({
+const useStyles = makeStyles((theme) => ({
   grid: {
     padding: theme.spacing(2),
   },
