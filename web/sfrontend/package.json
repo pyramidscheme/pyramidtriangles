@@ -1,5 +1,5 @@
 {
-  "name": "svelte-app",
+  "name": "pyramidtriangles-ui",
   "version": "1.0.0",
   "scripts": {
     "build": "rollup -c",
@@ -9,20 +9,22 @@
   "devDependencies": {
     "@rollup/plugin-commonjs": "^11.0.0",
     "@rollup/plugin-node-resolve": "^7.0.0",
-    "@smui/button": "^1.0.0-beta.20",
     "@smui/icon-button": "^1.0.0-beta.20",
     "@smui/list": "^1.0.0-beta.20",
     "@smui/paper": "^1.0.0-beta.20",
-    "@smui/slider": "^1.0.0-beta.20",
-    "@smui/snackbar": "^1.0.0-beta.20",
     "@smui/top-app-bar": "^1.0.0-beta.20",
     "rollup": "^1.20.0",
     "rollup-plugin-livereload": "^1.0.0",
+    "rollup-plugin-postcss": "^2.5.0",
     "rollup-plugin-svelte": "^5.0.3",
     "rollup-plugin-terser": "^5.1.2",
     "svelte": "^3.0.0"
   },
   "dependencies": {
     "sirv-cli": "^0.4.4"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/pyramidscheme/pyramidtriangles"
   }
 }

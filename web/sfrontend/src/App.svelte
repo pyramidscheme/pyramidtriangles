@@ -1,10 +1,45 @@
 <script>
+  import Paper from '@smui/paper';
+  import TopAppBar, {Row, Section, Title} from '@smui/top-app-bar';
+  import GlobalSettings from "./GlobalSettings.svelte";
+  import Playlist from "./Playlist.svelte";
+  import PlayingSettings from "./PlayingSettings.svelte";
+  import ShowSelector from "./ShowSelector.svelte";
+  import Status from "./Status.svelte";
+
   export let name;
 </script>
 
 <main>
-  <h1>Hello {name}!</h1>
-  <p>Visit the <a href="https://svelte.dev/tutorial">Svelte tutorial</a> to learn how to build Svelte apps.</p>
+  <TopAppBar variant="static">
+    <Row>
+      <Section toolbar>
+        <Title>
+          Triangle Shows | <Status />
+        </Title>
+      </Section>
+    </Row>
+  </TopAppBar>
+
+  <div class="container">
+    <div class="item col-xs-6">
+      <Paper class="show-selector">
+        <ShowSelector />
+      </Paper>
+    </div>
+
+    <div class="item col-xs-6">
+      <Paper class="settings">
+        <GlobalSettings />
+      </Paper>
+      <Paper class="settings">
+        <Playlist />
+      </Paper>
+      <Paper class="settings">
+        <PlayingSettings />
+      </Paper>
+    </div>
+  </div>
 </main>
 
 <style>
@@ -27,4 +62,10 @@
       max-width: none;
     }
   }
+
+  .container {
+    display: flex;
+  }
+
+  /*Background*/
 </style>
