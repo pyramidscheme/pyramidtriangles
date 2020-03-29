@@ -3,10 +3,10 @@ import './App.css';
 import {AppBar, Grid, makeStyles, Paper, Toolbar, Typography} from "@material-ui/core";
 import {ThemeProvider} from "@material-ui/core/styles";
 import GlobalSettings from "./GlobalSettings";
-import PlaylistComponent from "./Playlist";
+import Playlist from "./Playlist";
 import {PlaylistProvider} from "./PlaylistContext";
-import ShowSelectorComponent from "./ShowSelector";
-import PlayingSettingsComponent from "./PlayingShowSettings";
+import ShowSelector from "./ShowSelector";
+import PlayingSettings from "./PlayingShowSettings";
 import Status from "./Status";
 import {StatusProvider} from "./StatusContext";
 import {theme} from "./Theme";
@@ -40,7 +40,7 @@ const Layout = () => {
       <Grid container className={classes.container}>
         <Grid item xs={6}>
           <Paper className={classes.showSelector}>
-            <ShowSelectorComponent />
+            <ShowSelector />
           </Paper>
         </Grid>
 
@@ -49,10 +49,10 @@ const Layout = () => {
             <GlobalSettings />
           </Paper>
           <Paper className={classes.settings}>
-            <PlaylistComponent />
+            <Playlist />
           </Paper>
           <Paper className={classes.settings}>
-            <PlayingSettingsComponent />
+            <PlayingSettings />
           </Paper>
         </Grid>
       </Grid>

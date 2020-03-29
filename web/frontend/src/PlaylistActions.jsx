@@ -7,32 +7,32 @@ const sleep = (milliseconds) => {
   return new Promise(resolve => setTimeout(resolve, milliseconds))
 };
 
-async function updatePlaylist(setPlaylist) {
+const updatePlaylist = async (setPlaylist) => {
   const response = await axios.get('playlist');
   const newPlaylist = response.data;
   // Attempts to only update when there's a substantive difference.
   setPlaylist(oldPlaylist => oldPlaylist === newPlaylist ? oldPlaylist : newPlaylist);
-}
+};
 
-async function addToPlaylist(setPlaylist, show) {
+const addToPlaylist = async (setPlaylist, show) => {
   await axios.post('playlist', {show: show});
   await updatePlaylist(setPlaylist);
-}
+};
 
-async function deleteFromPlaylist(setPlaylist, entryId) {
+const deleteFromPlaylist = async (setPlaylist, entryId) => {
   await axios.delete(`playlist/entries/${entryId}`);
   await updatePlaylist(setPlaylist);
-}
+};
 
-async function clearPlaylist(setPlaylist) {
+const clearPlaylist = async (setPlaylist) => {
   await axios.delete('playlist');
   await updatePlaylist(setPlaylist);
-}
+};
 
-async function setPlayListNext(setPlaylist, entryId) {
+const setPlayListNext = async (setPlaylist, entryId) => {
   await axios.put('playlist', {entry_id: entryId});
   await sleep(300); // There should be a small delay so the correct entry is highlighted.
   await updatePlaylist(setPlaylist);
-}
+};
 
 export {updatePlaylist, addToPlaylist, deleteFromPlaylist, clearPlaylist, setPlayListNext};

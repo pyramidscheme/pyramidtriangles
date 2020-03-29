@@ -1,9 +1,9 @@
 import React, {useState} from "react";
 import {Collapse, ListItem, ListItemText, Grid, makeStyles, Typography} from "@material-ui/core";
 import {ExpandLess, ExpandMore} from '@material-ui/icons';
-import BrightnessComponent from "./Brightness";
-import ShowCycleComponent from "./ShowCycle";
-import SpeedComponent from "./Speed";
+import Brightness from "./Brightness";
+import ShowCycle from "./ShowCycle";
+import Speed from "./Speed";
 
 const useStyles = makeStyles(theme => ({
   grid: {
@@ -34,9 +34,9 @@ export default function GlobalSettings() {
           direction="column"
           justify="center"
         >
-          <BrightnessComponent />
-          <ShowCycleComponent />
-          <SpeedComponent />
+          <Brightness />
+          <ShowCycle />
+          <Speed />
         </Grid>
       </Collapse>
     </>
