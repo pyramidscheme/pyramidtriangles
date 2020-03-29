@@ -11,9 +11,8 @@ import {
 } from "@material-ui/core";
 import {ExpandLess, ExpandMore} from '@material-ui/icons';
 import {clearPlaylist, updatePlaylist} from "./PlaylistActions";
-import {usePlaylistState, useSetPlaylist} from "./PlaylistContext";
+import {usePlaylist, useSetPlaylist} from "./PlaylistContext";
 import PlaylistItem from "./PlaylistItem";
-import {withSnackbar} from "notistack";
 
 const useStyles = makeStyles(theme => ({
   grid: {
@@ -21,10 +20,10 @@ const useStyles = makeStyles(theme => ({
   },
 }));
 
-function Playlist(props) {
+export default function Playlist() {
   const classes = useStyles();
 
-  const {playlist, playing} = usePlaylistState();
+  const {playlist, playing} = usePlaylist();
   const setPlaylist = useSetPlaylist();
 
   const [open, setOpen] = useState(true);
@@ -42,18 +41,16 @@ function Playlist(props) {
   }, [setPlaylist]);
 
   const clickClear = async () => {
-    try {
-      await clearPlaylist(setPlaylist);
-    } catch (err) {
-      props.enqueueSnackbar(`Error clearing running shows: ${err.message}`, {
-        variant: 'error',
-      });
-    }
+    await clearPlaylist(setPlaylist);
   };
 
   const handleClick = () => {
     setOpen(!open);
   };
+
+  if (playlist.length === 0) {
+    return <></>;
+  }
 
   return (
     <>
@@ -90,6 +87,4 @@ function Playlist(props) {
       </Collapse>
     </>
   );
-}
-
-export default withSnackbar(Playlist);
+};

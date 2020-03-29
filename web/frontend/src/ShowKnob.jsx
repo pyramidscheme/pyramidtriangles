@@ -3,13 +3,14 @@ import HsvKnob from "./HsvKnob";
 import ValueKnob from "./ValueKnob";
 
 // Component for adjusting a show's knobs (settings). Defers to specific type component implementation.
-export default function ShowKnob({show, type, name, value, onChange}) {
+export default function ShowKnob(props) {
+  const {type} = props;
   switch (type) {
     case 'HSVKnob':
-      return <HsvKnob name={name} value={value} onChange={onChange} />;
+      return <HsvKnob {...props} />;
     case 'ValueKnob':
-      return <ValueKnob name={name} value={value} onChange={onChange} />;
+      return <ValueKnob {...props} />;
     default:
-      throw new Error(`Unrecognized knob (${show},${name}) of type ${type}`);
+      throw new Error(`Unrecognized knob type ${type}`);
   }
 }

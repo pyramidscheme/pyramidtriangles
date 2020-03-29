@@ -1,9 +1,8 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
 import { Box, Slider, Typography } from "@material-ui/core";
-import { withSnackbar } from "notistack";
 
-function ShowCycle(props) {
+export default function ShowCycle() {
   const [cycleSeconds, setCycleSeconds] = useState(60);
 
   // Loads initial cycleSeconds once.
@@ -16,11 +15,7 @@ function ShowCycle(props) {
   };
 
   const handleChangeCommitted = async (event, value) => {
-    try {
-      await axios.post('cycle_time', {value: value});
-    } catch(err) {
-      props.enqueueSnackbar(`Error adjusting show cycle time: ${err.message}`, {variant: 'error'});
-    }
+    await axios.post('cycle_time', {value: value});
   };
 
   return (
@@ -40,6 +35,4 @@ function ShowCycle(props) {
       />
     </Box>
   );
-}
-
-export default withSnackbar(ShowCycle);
+};

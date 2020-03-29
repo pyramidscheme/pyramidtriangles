@@ -1,5 +1,6 @@
 import React, {useState} from "react";
 import {
+  Box,
   Collapse,
   Grid,
   ListItem,
@@ -7,10 +8,9 @@ import {
   Typography
 } from "@material-ui/core";
 import {ExpandLess, ExpandMore} from '@material-ui/icons';
-import {useStatusState} from "./StatusContext";
+import {usePlayingStatus} from "./StatusContext";
 import ShowKnob from "./ShowKnob";
 import axios from "axios";
-import {withSnackbar} from "notistack";
 
 const useStyles = makeStyles(theme => ({
   grid: {
@@ -18,9 +18,9 @@ const useStyles = makeStyles(theme => ({
   },
 }));
 
-function PlayingShowSettings(props) {
+export default function PlayingShowSettings() {
   const classes = useStyles();
-  const {show, showKnobs} = useStatusState();
+  const {show, showKnobs} = usePlayingStatus();
   const [open, setOpen] = useState(true);
 
   const handleClick = () => {
@@ -29,21 +29,16 @@ function PlayingShowSettings(props) {
 
   const changeCallback = (show, name) => {
     return async (value) => {
-      try {
-        await axios.post('show_knob', {
-          show: show,
-          name: name,
-          value: value,
-        });
-      } catch (err) {
-        props.enqueueSnackbar(`Error adjusting show ${show} value ${name}: ${err.message}`,
-          {variant: 'error'});
-      }
+      await axios.post('show_knob', {
+        show: show,
+        name: name,
+        value: value,
+      });
     };
   };
 
   if (showKnobs.length === 0) {
-    return <div></div>;
+    return <></>;
   }
 
   return (
@@ -62,14 +57,16 @@ function PlayingShowSettings(props) {
           direction="column"
           justify="center"
         >
+          <Box paddingBottom={2}>
+            <Typography variant="subtitle2"><em>Note: affects running show and choices are not saved</em></Typography>
+          </Box>
+
           {
             showKnobs.map(knob =>
-              <ShowKnob show={show} onChange={changeCallback(show, knob.name)} {...knob} />)
+              <ShowKnob onChange={changeCallback(show, knob.name)} {...knob} />)
           }
         </Grid>
       </Collapse>
     </>
   );
-}
-
-export default withSnackbar(PlayingShowSettings);
+};

@@ -1,9 +1,8 @@
 import React, { useEffect, useState } from "react";
 import { Box, Slider, Typography } from "@material-ui/core";
 import axios from "axios";
-import { withSnackbar } from "notistack";
 
-function Brightness(props) {
+export default function Brightness() {
   const [brightness, setBrightness] = useState(100);
 
   // Loads initial brightness once.
@@ -16,11 +15,7 @@ function Brightness(props) {
   };
 
   const handleChange = async (event, value) => {
-    try {
-      await axios.post('brightness', {value: value});
-    } catch(err) {
-      props.enqueueSnackbar(`Error adjusting brightness: ${err.message}`, {variant: "error"});
-    }
+    await axios.post('brightness', {value: value});
   };
 
   return (
@@ -38,6 +33,4 @@ function Brightness(props) {
       />
     </Box>
   );
-}
-
-export default withSnackbar(Brightness);
+};

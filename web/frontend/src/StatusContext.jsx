@@ -1,15 +1,24 @@
-import React, { useEffect, useState } from "react";
+import React, {createContext, useContext, useEffect, useState} from "react";
 import axios from "axios";
 
 // React context provider pattern to manage the state of the playlist (set/get) across any components nested within a
 // PlaylistProvider.
 
-const StatusStateContext = React.createContext();
-const StatusRefreshContext = React.createContext();
+const StatusStateContext = createContext({});
 
+// Returns state accessors (not setters) for status: {show, seconds, showKnobs}.
+function usePlayingStatus() {
+  const context = useContext(StatusStateContext);
+  if (context === undefined) {
+    throw new Error('useStatusState must be used within a StatusStateContext')
+  }
+  return context;
+}
+
+// Status pertains to the running show.
 function StatusProvider({children}) {
   const [show, setShow] = useState('');
-  const [seconds, setSeconds] = useState(60);
+  const [seconds, setSeconds] = useState(0);
   const [showKnobs, setShowKnobs] = useState([]);
 
   const state = {
@@ -27,7 +36,7 @@ function StatusProvider({children}) {
     setShowKnobs(oldKnobs => oldKnobs === knobs ? oldKnobs : knobs);
   };
 
-  // Decrements seconds down to zero then stops
+  // Decrements seconds down to zero then stops.
   const decrementSeconds = () => {
     setSeconds(secs => secs > 0 ? secs - 1 : secs);
   };
@@ -53,29 +62,9 @@ function StatusProvider({children}) {
 
   return (
     <StatusStateContext.Provider value={state}>
-      <StatusRefreshContext.Provider value={updateStatus}>
-        {children}
-      </StatusRefreshContext.Provider>
+      {children}
     </StatusStateContext.Provider>
   );
 }
 
-// Returns state accessors (not setters) for status: {show, seconds, showKnobs}.
-function useStatusState() {
-  const context = React.useContext(StatusStateContext);
-  if (context === undefined) {
-    throw new Error('useStatusState must be used within a StatusStateContext')
-  }
-  return context;
-}
-
-// Children components can force an update with 'useStatusRefresh'.
-function useStatusRefresh() {
-  const context = React.useContext(StatusRefreshContext);
-  if (context === undefined) {
-    throw new Error('useStatusRefresh must be used within a StatusRefreshContext')
-  }
-  return context;
-}
-
-export {StatusProvider, useStatusState, useStatusRefresh};
+export {StatusProvider, usePlayingStatus};

@@ -1,8 +1,8 @@
 import React from "react";
-import { useStatusState } from "./StatusContext";
+import { usePlayingStatus } from "./StatusContext";
 
 export default function Status() {
-  const {show, seconds} = useStatusState();
+  const {show, seconds} = usePlayingStatus();
 
   // Can use React's Suspense component once it's released for data waiting.
   if (show === '') { // Loading or Stopped

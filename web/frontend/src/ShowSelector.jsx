@@ -12,46 +12,23 @@ import PlayCircleOutlineIcon from '@material-ui/icons/PlayCircleOutline';
 import PlaylistAddIcon from '@material-ui/icons/PlaylistAdd';
 import { addToPlaylist } from "./PlaylistActions";
 import { useSetPlaylist } from "./PlaylistContext";
-import { withSnackbar } from "notistack";
 
-function ShowSelector(props) {
+export default function ShowSelector() {
   const [shows, setShows] = useState([]);
   const setPlaylist = useSetPlaylist();
 
-  const updateShowList = async () => {
-    const response = await axios.get('shows');
-    const newShows = response.data.shows;
-    // Attempts to only update when there's a substantive difference.
-    setShows(oldShows => oldShows === newShows ? oldShows : newShows);
-  };
-
-  const errorMessage = (message) => {
-    props.enqueueSnackbar(message, {variant: 'error'});
-  };
-
   useEffect(() => {
     // Get list of shows from server at startup.
-    axios.get('shows').then((resp) => setShows(resp.data.shows));
-
-    // Refresh list of shows from the server every 10 seconds.
-    const interval = setInterval(updateShowList, 10_000);
-    return () => clearInterval(interval);
+    axios.get('shows')
+      .then((resp) => setShows(resp.data.shows));
   }, []);
 
   const clickPlay = async (show) => {
-    try {
-      await axios.post('shows', {value: show});
-    } catch (err) {
-      errorMessage(`Error running show ${show}: ${err.message}`);
-    }
+    await axios.post('shows', {value: show});
   };
 
   const clickEnqueue = async (show) => {
-    try {
-      await addToPlaylist(setPlaylist, show);
-    } catch (err) {
-      errorMessage(`Error adding show ${show} to playlist: ${err.message}`);
-    }
+    await addToPlaylist(setPlaylist, show);
   };
 
   const PlayButton = ({show}) => {
@@ -91,6 +68,4 @@ function ShowSelector(props) {
       </List>
     </>
   );
-}
-
-export default withSnackbar(ShowSelector);
+};

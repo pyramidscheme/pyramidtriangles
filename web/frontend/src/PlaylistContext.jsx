@@ -1,13 +1,13 @@
-import React, { useState } from "react";
+import React, {createContext, useContext, useState} from "react";
 
 // React context provider pattern to manage the state of the playlist (set/get) across any components nested within a
 // PlaylistProvider.
 
-const PlaylistStateContext = React.createContext();
-const PlaylistDispatchContext = React.createContext();
+const PlaylistStateContext = createContext({});
+const PlaylistDispatchContext = createContext({});
 
 function PlaylistProvider({children}) {
-  const [playlist, setPlaylist] = useState({'playlist':[]});
+  const [playlist, setPlaylist] = useState({playlist: []});
 
   return (
     <PlaylistStateContext.Provider value={playlist}>
@@ -18,8 +18,8 @@ function PlaylistProvider({children}) {
   );
 }
 
-function usePlaylistState() {
-  const context = React.useContext(PlaylistStateContext);
+function usePlaylist() {
+  const context = useContext(PlaylistStateContext);
   if (context === undefined) {
     throw new Error('usePlaylistState must be used within a PlaylistProvider')
   }
@@ -27,11 +27,11 @@ function usePlaylistState() {
 }
 
 function useSetPlaylist() {
-  const context = React.useContext(PlaylistDispatchContext);
+  const context = useContext(PlaylistDispatchContext);
   if (context === undefined) {
     throw new Error('usePlaylistDispatch must be used within a PlaylistProvider')
   }
   return context;
 }
 
-export {PlaylistProvider, usePlaylistState, useSetPlaylist};
+export {PlaylistProvider, usePlaylist, useSetPlaylist};

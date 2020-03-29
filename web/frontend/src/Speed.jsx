@@ -1,9 +1,8 @@
 import React, { useEffect, useState } from "react";
 import { Box, Slider, Typography } from "@material-ui/core";
 import axios from "axios";
-import { withSnackbar } from "notistack";
 
-function Speed(props) {
+export default function Speed() {
   const [speed, setSpeed] = useState(1.0);
 
   // Load initial speed once.
@@ -16,11 +15,7 @@ function Speed(props) {
   };
 
   const handleChangeCommitted = async (event, value) => {
-    try {
-      await axios.post('speed', {value: value});
-    } catch(err) {
-      props.enqueueSnackbar(`Error adjusting speed: ${err.message}`, {variant: 'error'});
-    }
+    await axios.post('speed', {value: value});
   };
 
   return (
@@ -40,6 +35,4 @@ function Speed(props) {
       />
     </Box>
   );
-}
-
-export default withSnackbar(Speed);
+};

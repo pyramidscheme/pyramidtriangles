@@ -2,7 +2,6 @@ import React, {useEffect, useState} from "react";
 import axios from "axios";
 import {Button, Dialog, DialogActions, DialogContent, DialogTitle, Grid, makeStyles} from "@material-ui/core";
 import ShowKnob from "./ShowKnob";
-import {withSnackbar} from "notistack";
 
 const useStyles = makeStyles(theme => ({
   grid: {
@@ -10,13 +9,8 @@ const useStyles = makeStyles(theme => ({
   },
 }));
 
-function PlaylistSettingsDialog(props) {
+export default function PlaylistSettingsDialog({entryId, show, open, setOpen, showKnobs}) {
   const classes = useStyles();
-  const {entryId, show} = props;
-
-  // state callbacks passed from parent
-  const {open, setOpen, showKnobs} = props;
-
   const [setting, setSetting] = useState({});
 
   const handleClose = () => {
@@ -28,21 +22,11 @@ function PlaylistSettingsDialog(props) {
     axios.get(`playlist/entries/${entryId}`).then(resp => setSetting(resp.data));
   }, [entryId]);
 
-  const errorMessage = (msg) => {
-    props.enqueueSnackbar(msg, {variant: 'error'});
-  };
-
   const changeCallback = (name) => {
     return async (value) => {
-      try {
-        const newSetting = {[name]: value};
-        await axios.put(`playlist/entries/${entryId}`, newSetting);
-        setSetting(oldSetting => {
-          return {...oldSetting, ...newSetting};
-        });
-      } catch (err) {
-        errorMessage(`Error sending settings for show: ${err.message}`);
-      }
+      const newSetting = {[name]: value};
+      await axios.put(`playlist/entries/${entryId}`, newSetting);
+      setSetting(oldSetting => oldSetting.assign(newSetting));
     };
   };
 
@@ -64,7 +48,7 @@ function PlaylistSettingsDialog(props) {
               if (setting.hasOwnProperty(knob.name) && knob.value.default !== setting[knob.name]) {
                 knob.value.default = setting[knob.name];
               }
-              return <ShowKnob show={show} onChange={changeCallback(knob.name)} {...knob} />
+              return <ShowKnob onChange={changeCallback(knob.name)} {...knob} />
             })
           }
         </Grid>
@@ -76,6 +60,4 @@ function PlaylistSettingsDialog(props) {
       </DialogActions>
     </Dialog>
   );
-}
-
-export default withSnackbar(PlaylistSettingsDialog);
+};

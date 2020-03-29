@@ -7,7 +7,6 @@ import TuneIcon from "@material-ui/icons/Tune";
 import {deleteFromPlaylist, setPlayListNext} from "./PlaylistActions";
 import {useSetPlaylist} from "./PlaylistContext";
 import PlaylistSettingsDialog from "./PlaylistSettingsDialog";
-import {withSnackbar} from "notistack";
 
 const SettingsButton = ({onClick}) => {
   return (
@@ -29,9 +28,7 @@ const DeleteButton = ({onClick}) => {
   );
 };
 
-const PlaylistItem = (props) => {
-  const {entryId, show, isPlaying} = props;
-
+export default function PlaylistItem({entryId, show, isPlaying}) {
   const setPlaylist = useSetPlaylist();
   const [settingsOpen, setSettingsOpen] = useState(false);
   const [showKnobs, setShowKnobs] = useState([]);
@@ -42,16 +39,8 @@ const PlaylistItem = (props) => {
       .then((resp) => setShowKnobs(oldData => oldData === resp.data ? oldData : resp.data));
   }, [show]);
 
-  const errorMessage = (msg) => {
-    props.enqueueSnackbar(msg, {variant: 'error'})
-  };
-
   const clickPlay = async () => {
-    try {
-      await setPlayListNext(setPlaylist, entryId);
-    } catch (err) {
-      errorMessage(`Error setting next playlist entry: ${err.message}`);
-    }
+    await setPlayListNext(setPlaylist, entryId);
   };
 
   const openSettings = (event) => {
@@ -61,11 +50,7 @@ const PlaylistItem = (props) => {
 
   const clickRemove = async (event) => {
     event.stopPropagation();
-    try {
-      await deleteFromPlaylist(setPlaylist, entryId);
-    } catch (err) {
-      errorMessage(`Error removing from playlist: ${err.message}`);
-    }
+    await deleteFromPlaylist(setPlaylist, entryId);
   };
 
   return (
@@ -98,5 +83,3 @@ const PlaylistItem = (props) => {
     </>
   );
 };
-
-export default withSnackbar(PlaylistItem);
