@@ -9,6 +9,13 @@
   "devDependencies": {
     "@rollup/plugin-commonjs": "^11.0.0",
     "@rollup/plugin-node-resolve": "^7.0.0",
+    "@smui/button": "^1.0.0-beta.20",
+    "@smui/icon-button": "^1.0.0-beta.20",
+    "@smui/list": "^1.0.0-beta.20",
+    "@smui/paper": "^1.0.0-beta.20",
+    "@smui/slider": "^1.0.0-beta.20",
+    "@smui/snackbar": "^1.0.0-beta.20",
+    "@smui/top-app-bar": "^1.0.0-beta.20",
     "rollup": "^1.20.0",
     "rollup-plugin-livereload": "^1.0.0",
     "rollup-plugin-svelte": "^5.0.3",
