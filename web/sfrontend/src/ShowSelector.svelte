@@ -1,7 +1,8 @@
 <script>
-  import {onDestroy, onMount} from "svelte";
-  import IconButton from '@smui/icon-button';
-  import List, {Item, Text, PrimaryText, SecondaryText} from '@smui/list';
+  import {onMount} from "svelte";
+  import Icon from "smelte/src/components/Icon";
+  import List from "smelte/src/components/List";
+  import createRipple from "smelte/src/components/Ripple/ripple";
   import {addToPlaylist} from "./playlist_actions";
 
   let shows = [];
@@ -16,9 +17,6 @@
     await updateShowList();
   });
 
-  const interval = setInterval(updateShowList, 10_000);
-  onDestroy(() => clearInterval(interval));
-
   const clickPlay = async (show) => {
     await fetch('shows', {
       method: 'POST',
@@ -28,22 +26,36 @@
 
   const clickEnqueue = async (show) => {
     await addToPlaylist(show);
-  }
+  };
+
+  let selected;
+
+  const ripple = createRipple();
 </script>
 
-<div class="mdc-typography--headline5">
-  Show Selector
-</div>
+<h5>Show Selector</h5>
 
-<List dense>
-  {#each shows as show}
-    <Item color="primary" divider>
-      <Text>
-        <PrimaryText>{show.name}</PrimaryText>
-        <SecondaryText>{show.description}</SecondaryText>
-      </Text>
-      <IconButton on:click={() => clickPlay(show.name)}>play_circle</IconButton>
-      <IconButton on:click={() => clickEnqueue(show.name)}>playlist_add</IconButton>
-    </Item>
-  {/each}
+<List bind:value={selected} items={shows} dense>
+    <li slot="item" let:item={item}>
+      <div class="flex flex-col p-0">
+        <div class="bg-gray-200 dark:bg-primary-transLight">{item.name}</div>
+
+        <div class="text-gray-600 p-0 text-sm">{item.description}</div>
+
+        <div
+          use:ripple
+          on:click={() => clickPlay(item.name)}
+        >
+          <Icon>play_circle</Icon>
+        </div>
+
+        <div
+          use:ripple
+          on:click={() => clickEnqueue(item.name)}
+        >
+          <Icon>playlist_add</Icon>
+        </div>
+      </div>
+    </li>
+<!-- Divider -->
 </List>

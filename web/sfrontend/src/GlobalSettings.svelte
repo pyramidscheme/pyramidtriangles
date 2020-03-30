@@ -1,28 +1,21 @@
 <script>
-  import {Item, Text, Graphic} from '@smui/list';
+  import Brightness from "./Brightness.svelte";
+  import ShowCycle from "./ShowCycle.svelte";
+  import Speed from "./Speed.svelte";
 </script>
 
-<Item button onClick={handleClick}>
-  <Text>
-    <div class="mdc-typography--headline5">
-      Global Settings
-    </div>
-  </Text>
-  {#if open}
-    <Graphic class="material-icons">expand_less</Graphic>
-  {:else}
-    <Graphic class="material-icons">expand_more</Graphic>
-  {/if}
-</Item>
-  <Collapse in={open} timeout="auto">
-    <Grid
-      className={classes.grid}
-      container
-      direction="column"
-      justify="center"
-    >
-      <Brightness />
-      <ShowCycle />
-      <Speed />
-    </Grid>
-  </Collapse>
+<style>
+  .container {
+    display: grid;
+    justify-items: center;
+  }
+</style>
+
+<div class="item">
+  <h5>Global Settings</h5>
+</div>
+<div class="container">
+  <Brightness />
+  <ShowCycle />
+  <Speed />
+</div>

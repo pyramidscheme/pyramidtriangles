@@ -9,10 +9,6 @@
   "devDependencies": {
     "@rollup/plugin-commonjs": "^11.0.0",
     "@rollup/plugin-node-resolve": "^7.0.0",
-    "@smui/icon-button": "^1.0.0-beta.20",
-    "@smui/list": "^1.0.0-beta.20",
-    "@smui/paper": "^1.0.0-beta.20",
-    "@smui/top-app-bar": "^1.0.0-beta.20",
     "rollup": "^1.20.0",
     "rollup-plugin-livereload": "^1.0.0",
     "rollup-plugin-postcss": "^2.5.0",
@@ -21,7 +17,10 @@
     "svelte": "^3.0.0"
   },
   "dependencies": {
-    "sirv-cli": "^0.4.4"
+    "material-icons": "^0.3.1",
+    "postcss": "^7.0.27",
+    "sirv-cli": "^0.4.4",
+    "smelte": "^1.0.11"
   },
   "repository": {
     "type": "git",

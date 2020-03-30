@@ -1,43 +1,38 @@
 <script>
-  import Paper from '@smui/paper';
-  import TopAppBar, {Row, Section, Title} from '@smui/top-app-bar';
+  import AppBar from "smelte/src/components/AppBar";
   import GlobalSettings from "./GlobalSettings.svelte";
   import Playlist from "./Playlist.svelte";
   import PlayingSettings from "./PlayingSettings.svelte";
   import ShowSelector from "./ShowSelector.svelte";
   import Status from "./Status.svelte";
 
-  export let name;
+  import "material-icons/iconfont/material-icons.css";
 </script>
 
 <main>
-  <TopAppBar variant="static">
-    <Row>
-      <Section toolbar>
-        <Title>
-          Triangle Shows | <Status />
-        </Title>
-      </Section>
-    </Row>
-  </TopAppBar>
+  <AppBar variant="static">
+    <div>
+      Triangle Shows | <Status />
+    </div>
+  </AppBar>
 
   <div class="container">
     <div class="item col-xs-6">
-      <Paper class="show-selector">
+      <div class="paper show-selector">
         <ShowSelector />
-      </Paper>
+      </div>
     </div>
 
     <div class="item col-xs-6">
-      <Paper class="settings">
+      <div class="paper settings">
         <GlobalSettings />
-      </Paper>
-      <Paper class="settings">
+      </div>
+      <div class="paper settings">
         <Playlist />
-      </Paper>
-      <Paper class="settings">
+      </div>
+      <div class="paper settings">
         <PlayingSettings />
-      </Paper>
+      </div>
     </div>
   </div>
 </main>
@@ -64,7 +59,7 @@
   }
 
   .container {
-    display: flex;
+    display: grid;
   }
 
   /*Background*/
