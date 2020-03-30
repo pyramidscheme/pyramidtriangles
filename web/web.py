@@ -1,5 +1,4 @@
 import logging
-import threading
 from queue import Queue
 from os import path
 import cherrypy
@@ -15,14 +14,14 @@ from .show_knob import ShowKnob
 from .speed import Speed
 from .status import Status
 
-logging.getLogger("cherrypy").propagate = False
+# Suppressing logging to terminal for cherrypy access logs, which are really noisy.
+# The log is still written to `log/cherrypy_access.log` though.
+logging.getLogger("cherrypy.access").propagate = False
 
 
 class Web:
     """Web API for running triangle shows."""
-    def __init__(self, shutdown: threading.Event, command_queue: Queue, status_queue: Queue):
-        self.shutdown = shutdown
-
+    def __init__(self, command_queue: Queue, status_queue: Queue):
         # In-memory DB is easier than organizing thread-safety around all operations. At least one connection must stay
         # open. 'self.db' shouldn't be closed.
         self.db = PlaylistController()
@@ -68,9 +67,6 @@ class Web:
             'log.access_file': 'log/cherrypy_access.log',
             'log.screen': False,
         })
-
-        # When cherrypy publishes to 'stop' bus (e.g. Autoreloader) trigger shutdown event
-        cherrypy.engine.subscribe('stop', self.shutdown.set)
 
         # this method blocks until KeyboardInterrupt
         cherrypy.quickstart(self, '/', config=config)

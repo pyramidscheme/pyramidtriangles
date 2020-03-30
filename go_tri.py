@@ -3,6 +3,8 @@ import faulthandler
 import logging
 import sys
 import threading
+
+import cherrypy
 import netifaces
 from typing import Type
 import queue
@@ -70,13 +72,17 @@ class TriangleServer(object):
         except Exception:
             logger.exception("Exception starting ShowRunner")
 
+    def stop(self):
+        self.shutdown.set()
+        self.model.stop()
+
     def go_web(self):
         """Run with the web interface"""
         logger.info("Running with web interface")
 
         show_names = [name for (name, cls) in shows.load_shows()]
         print(f'shows: {show_names}')
-        web = Web(self.shutdown, self.command_queue, self.status_queue)
+        web = Web(self.command_queue, self.status_queue)
 
         config = {
             'global': {
@@ -87,6 +93,9 @@ class TriangleServer(object):
                 # 'response.timeout' : 60*15
             },
         }
+
+        # When cherrypy publishes to 'stop' bus (e.g. Autoreloader) trigger stop for other threads.
+        cherrypy.engine.subscribe('stop', self.stop)
 
         # this method blocks until KeyboardInterrupt
         web.start(config)
