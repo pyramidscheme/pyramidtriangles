@@ -10,20 +10,23 @@
 </script>
 
 <main>
-  <AppBar variant="static">
-    <div>
-      Triangle Shows | <Status />
-    </div>
-  </AppBar>
+  <div class="flex items-center flex-wrap bg-purple p-6 fixed w-full z-10 pin-t">
+    Triangle Shows | <Status />
+  </div>
+<!--  <AppBar variant="static">-->
+<!--    <div class="p-6">-->
+<!--      Triangle Shows | <Status />-->
+<!--    </div>-->
+<!--  </AppBar>-->
 
-  <div class="container">
-    <div class="item col-xs-6">
-      <div class="paper show-selector">
+  <div class="grid grid-cols-2 gap-4 bg-dark-gray">
+    <div class="col-span-1">
+      <div class="paper show-selector p-4 bg-gray rounded-lg shadow-lg">
         <ShowSelector />
       </div>
     </div>
 
-    <div class="item col-xs-6">
+    <div class="col-span-1">
       <div class="paper settings">
         <GlobalSettings />
       </div>

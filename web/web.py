@@ -44,7 +44,7 @@ class Web:
         Exposed so tests can reuse this config.
         """
         directory = path.dirname(path.abspath(__file__))
-        static_path = path.join(directory, 'frontend/build')
+        static_path = path.join(directory, 'sfrontend/public')
 
         if config is None:
             config = {}

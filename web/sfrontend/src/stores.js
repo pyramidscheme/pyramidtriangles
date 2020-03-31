@@ -3,7 +3,7 @@ import {derived, readable, writable} from 'svelte/store';
 let lastUpdate = new Date();
 
 export const status = readable({
-  show: '',
+  show: undefined,
   seconds: 0,
   showKnobs: [],
 }, function start(set) {
