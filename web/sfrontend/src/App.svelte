@@ -10,30 +10,27 @@
 </script>
 
 <main>
-  <div class="flex items-center flex-wrap bg-purple p-6 fixed w-full z-10 pin-t">
-    Triangle Shows | <Status />
-  </div>
-<!--  <AppBar variant="static">-->
-<!--    <div class="p-6">-->
-<!--      Triangle Shows | <Status />-->
-<!--    </div>-->
-<!--  </AppBar>-->
+  <nav class="bg-purple p-2 mt-0 fixed w-full z-10 top-0">
+    <div class="container mx-auto justify-left">
+      Triangle Shows | <Status />
+    </div>
+  </nav>
 
-  <div class="grid grid-cols-2 gap-4 bg-dark-gray">
+  <div class="container grid grid-cols-2 gap-4">
     <div class="col-span-1">
-      <div class="paper show-selector p-4 bg-gray rounded-lg shadow-lg">
+      <div class="p-4 bg-gray rounded-lg shadow-lg">
         <ShowSelector />
       </div>
     </div>
 
     <div class="col-span-1">
-      <div class="paper settings">
+      <div class="p-8 bg-gray rounded-lg shadow-lg">
         <GlobalSettings />
       </div>
-      <div class="paper settings">
+      <div class="p-4 bg-gray rounded-lg shadow-lg">
         <Playlist />
       </div>
-      <div class="paper settings">
+      <div class="p-4 bg-gray rounded-lg shadow-lg">
         <PlayingSettings />
       </div>
     </div>
