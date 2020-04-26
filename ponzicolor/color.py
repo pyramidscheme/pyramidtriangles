@@ -77,6 +77,11 @@ class Color(DisplayColor):
 
         return Color(c(self.r), c(self.g), c(self.b), c(self.w))
 
+    def blend_lab(self, other: "Color", bias: float) -> "Color":
+        return Color.from_lab(
+            blend.lab(self.lab, other.lab, bias)
+        )
+
     def blend(self, other: "Color", bias: float) -> "Color":
         return Color.from_hcl(
             blend.hcl(self.hcl, other.hcl, bias)
