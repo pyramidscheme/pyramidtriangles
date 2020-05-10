@@ -10,6 +10,6 @@ echo "Installing python dependencies with poetry"
 poetry install
 
 # Builds frontend
-cd js
+cd js/frontend
 npm install
 npm run build

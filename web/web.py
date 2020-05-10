@@ -51,7 +51,7 @@ class Web:
                 'request.dispatch': cherrypy.dispatch.MethodDispatcher(),
                 'tools.gzip.on': True,
                 'tools.staticdir.on': True,
-                'tools.staticdir.dir': Path(__file__).parent/'../js/build',
+                'tools.staticdir.dir': Path(__file__).parent/'../js/controller/build',
                 'tools.staticdir.index': 'index.html',
             }
         })

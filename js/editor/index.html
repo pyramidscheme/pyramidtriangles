@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <title>Triangle show editor</title>
+    <link href="style.css" rel="stylesheet">
+<!--    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css"-->
+<!--          integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh"-->
+<!--          crossorigin="anonymous">-->
+  </head>
+  <body>
+    <h1>Triangle Editor</h1>
+    <div class="container">
+      <canvas id="model" height="460" width="460">Canvas is necessary but not supported by your browser.</canvas>
+
+      <div class="controls">
+        <button id="coordDump">Dump selected coordinates</button>
+        <button id="clear">Clear drawing</button>
+<!--        <div>-->
+<!--          <input type="color" id="colorPicker" value="#03994F">-->
+<!--          <label for="colorPicker">Fill color</label>-->
+<!--        </div>-->
+
+        <label for="coordOutput">Coordinates:</label>
+        <textarea id="coordOutput" rows="35" cols="60">Clicking the button will append the currently selected coordinates here.
+</textarea>
+      </div>
+    </div>
+
+    <script src="https://unpkg.com/fabric@4.0.0-beta.8/dist/fabric.js"
+            integrity="sha384-YDUmmvnqj6j6WDFPVX7/wHGLlLc/56nDV+xiDCOsFcb2S8YMw8vAFKHSMj/9A69b"
+            crossorigin="anonymous"
+            referrerpolicy="no-referrer"></script>
+    <script type="module" src="main.js"></script>
+  </body>
+</html>
