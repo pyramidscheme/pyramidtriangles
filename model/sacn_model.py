@@ -4,13 +4,13 @@ Model to communicate with Devices listening for sACN DMX data
 Pixels are representations of the addressable unit in your object. Cells can have multiple pixels in this model only
 have one LED each.
 """
+from __future__ import annotations
 import logging
 from collections.abc import Iterable
-
 import sacn
 
-from grid import Address, Cell
 from .base import allocate_universes, DisplayColor, Model
+from grid import Address, Cell
 
 logger = logging.getLogger("pyramidtriangles")
 

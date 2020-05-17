@@ -1,3 +1,4 @@
+from __future__ import annotations
 import time
 from queue import Queue, Empty
 from typing import Optional
@@ -7,7 +8,7 @@ from core import Status
 
 class LatestStatus:
     """Wraps a Queue of Status updates to supply the most recent status."""
-    def __init__(self, queue: 'Queue[Status]'):
+    def __init__(self, queue: Queue[Status]):
         self.queue = queue
         self.status: Optional[Status] = None
 

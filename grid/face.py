@@ -116,7 +116,7 @@ class Face(Grid):
 
         overall_geom = Geometry(origin=Coordinate(0, 0),
                                 rows=(len(spec) * rows_per_panel))
-        panel_rows = [[] for _ in range(len(spec))]
+        panel_rows: list[list[Panel]] = [[] for _ in range(len(spec))]
         addr = start
 
         # Work row-by-row, panel-by-panel, generating all panels so we can use

@@ -42,7 +42,7 @@ class Color(DisplayColor):
             h = h[1:]
         if len(h) == 6:
             h += "00"
-        return Color(*tuple(int(h[i: i + 2], 16) / 255 for i in range(0, 8, 2)))
+        return cls(*tuple(int(h[i: i + 2], 16) / 255 for i in range(0, 8, 2)))
 
     @classmethod
     def from_rgb(cls, rgb: RGB) -> Color:
@@ -78,12 +78,12 @@ class Color(DisplayColor):
 
         return Color(c(self.r), c(self.g), c(self.b), c(self.w))
 
-    def blend_lab(self, other: "Color", bias: float) -> "Color":
+    def blend_lab(self, other: Color, bias: float) -> Color:
         return Color.from_lab(
             blend.lab(self.lab, other.lab, bias)
         )
 
-    def blend(self, other: "Color", bias: float) -> "Color":
+    def blend(self, other: Color, bias: float) -> Color:
         return Color.from_hcl(
             blend.hcl(self.hcl, other.hcl, bias)
         )

@@ -128,4 +128,4 @@ class Grid(Mapping[Location, Cell]):
         return len(self.cells)
 
     def __repr__(self):
-        return f'<{type(self).__name__} rows={self.row_count} {self.model}>'
+        return f'<{Grid.__name__} rows={self.row_count} {self.model}>'

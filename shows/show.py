@@ -1,3 +1,4 @@
+from __future__ import annotations
 from abc import ABC, abstractmethod
 from collections.abc import Generator
 
@@ -39,7 +40,7 @@ class Show(ABC):
             debug_registry.add(cls)
 
     @abstractmethod
-    def __init__(self, pyramid: Pyramid):
+    def __init__(self, pyramid: Pyramid) -> None:
         ...
 
     @property

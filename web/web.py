@@ -1,8 +1,9 @@
+from __future__ import annotations
 import logging
 from pathlib import Path
 from queue import Queue
 import cherrypy
-from typing import Any, Dict, Optional
+from typing import Optional
 
 from core import PlaylistController
 from .brightness import Brightness
@@ -38,7 +39,7 @@ class Web:
         self.status = Status(status)
 
     @staticmethod
-    def build_config(config: Optional[Dict[str, Any]] = None) -> Dict[str, Any]:
+    def build_config(config: Optional[dict] = None) -> dict:
         """
         Builds a cherrypy config by merging settings into the config argument.
         Exposed so tests can reuse this config.

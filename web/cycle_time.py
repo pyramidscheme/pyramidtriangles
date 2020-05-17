@@ -1,6 +1,7 @@
+from __future__ import annotations
 import cherrypy
+from collections.abc import Mapping
 from queue import Queue
-from typing import Mapping
 
 from core import RuntimeCmd
 from .latest_status import LatestStatus

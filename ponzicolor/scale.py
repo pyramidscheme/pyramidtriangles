@@ -1,6 +1,6 @@
 from __future__ import annotations
-from itertools import islice
 from collections.abc import Sequence
+from itertools import islice
 
 from .color import Color
 

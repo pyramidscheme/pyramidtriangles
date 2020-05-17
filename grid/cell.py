@@ -3,7 +3,6 @@ from collections.abc import Iterable
 from enum import IntEnum
 from typing import Optional, NamedTuple
 
-
 from .geom import Address, Coordinate, Geometry, Position, Universe
 
 
@@ -148,4 +147,4 @@ class Cell(NamedTuple):
         return max(self.universes)
 
     def __hash__(self):
-        return hash((type(self), self.position))
+        return hash((Cell, self.position))

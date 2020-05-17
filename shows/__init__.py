@@ -1,6 +1,7 @@
-from collections.abc import Iterator
+from __future__ import annotations
 import importlib
 import logging
+from collections.abc import Iterator
 from functools import lru_cache
 from pathlib import Path
 from random import choice

@@ -1,8 +1,9 @@
-import dataclasses
+from __future__ import annotations
 import logging
 import queue
-from dataclasses import dataclass
-from typing import Union, Iterable, MutableMapping, Mapping, Dict
+from collections.abc import MutableMapping, Iterable, Mapping
+from dataclasses import dataclass, asdict
+from typing import Union
 
 from model import DisplayColor
 
@@ -98,7 +99,7 @@ class KnobCollection(MutableMapping):
         return iter(self.values)
 
     @property
-    def json_array(self) -> Iterable[Mapping[str, Union[str, Dict[str, float]]]]:
+    def json_array(self) -> Iterable[Mapping[str, Union[str, dict[str, float]]]]:
         """
         Creates a JSON array of configured knobs and default values.
 
@@ -123,7 +124,7 @@ class KnobCollection(MutableMapping):
         ret = []
         for (name, knob) in self.knobs.items():
             knob_type = type(knob).__name__
-            knob_value = dataclasses.asdict(knob)
+            knob_value = asdict(knob)
             if isinstance(knob_value['default'], DisplayColor):
                 hsv = knob_value['default'].hsv
                 # JSON encoder doesn't know how to serialize an HSV type

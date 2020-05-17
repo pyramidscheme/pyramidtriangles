@@ -1,6 +1,8 @@
+from __future__ import annotations
 import cherrypy
+from collections import Mapping
 from queue import Queue
-from typing import List, Tuple, Mapping, Union
+from typing import Union
 
 from core import PlaylistController, Settings
 from core import RunShowCmd
@@ -15,7 +17,7 @@ class Playlist:
         self.queue = queue
         self.playlist = playlist
 
-    def GET(self) -> Mapping[str, Union[List[Tuple[int, str]], int]]:
+    def GET(self) -> Mapping[str, Union[list[tuple[int, str]], int]]:
         """
         Returns the current playlist of shows. [(id, show),...].
         """

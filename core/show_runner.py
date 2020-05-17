@@ -1,3 +1,4 @@
+from __future__ import annotations
 from collections.abc import Generator, Iterable, Mapping
 from dataclasses import dataclass
 import logging
@@ -163,7 +164,7 @@ class ShowRunner(Thread):
             2. Show in playlist
             3. Show from semi-random sequence generator
         """
-        show_cls: type[Show] = None
+        show_cls: Optional[type[Show]] = None
         if name:
             if name in self.shows:
                 show_cls = self.shows[name]

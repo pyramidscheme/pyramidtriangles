@@ -1,12 +1,13 @@
+from __future__ import annotations
 import json
 import sqlite3
-from typing import List, Tuple, Optional, Dict, Union
+from typing import Optional, Union
 
-HSVValues = Dict[str, float]
+HSVValues = dict[str, float]
 # setting_value can be int, float, or an HSV triple
 Value = Union[int, float, HSVValues]
 # setting_name -> setting_value
-Settings = Dict[str, Value]
+Settings = dict[str, Value]
 
 
 class PlaylistController:
@@ -32,7 +33,7 @@ class PlaylistController:
     def _connect(self) -> sqlite3.Connection:
         return sqlite3.connect(self.uri, timeout=2.0, uri=True)
 
-    def current_playlist(self) -> List[Tuple[int, str]]:
+    def current_playlist(self) -> list[tuple[int, str]]:
         """
         Returns the current playlist of shows. [(id, show),...].
         """

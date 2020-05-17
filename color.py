@@ -80,6 +80,7 @@ RGBW
 To get the (r,g,b,w) tuples back from a Color object, simply call Color.rgbw and you will return the (r,g,b,w) tuple.
 
 """
+from __future__ import annotations
 import colorsys
 from copy import deepcopy
 from math import fmod, cos, radians
@@ -353,7 +354,7 @@ def hsl_to_hsv(hue: float, sat_hsl: float, lightness: float) -> tuple[float, flo
     return hue, sat_hsv, value
 
 
-def HSI(hue: Union[int, float], saturation: float, intensity: float) -> "Color":
+def HSI(hue: Union[int, float], saturation: float, intensity: float) -> Color:
     """
     Create new HSI color.
 
@@ -378,7 +379,7 @@ def HSI(hue: Union[int, float], saturation: float, intensity: float) -> "Color":
     return RGB(*hsi_to_rgb(hue, saturation, intensity))
 
 
-def RGB(r, g, b) -> "Color":
+def RGB(r, g, b) -> Color:
     """Create a new RGB color"""
     for val in [r, g, b]:
         if not 0 <= val < 256:
@@ -387,7 +388,7 @@ def RGB(r, g, b) -> "Color":
     return Color(rgb_to_hsv(r, g, b))
 
 
-def RGBW(r, g, b, w) -> "Color":
+def RGBW(r, g, b, w) -> Color:
     """Create a new RGBW color"""
     for val in [r, g, b, w]:
         if not 0 <= val < 256:
@@ -396,7 +397,7 @@ def RGBW(r, g, b, w) -> "Color":
     return Color(rgbw_to_hsv(r, g, b, w))
 
 
-def HSV(hue: Union[int, float], saturation: float, value: float) -> "Color":
+def HSV(hue: Union[int, float], saturation: float, value: float) -> Color:
     """
     Create a new HSV color
 
@@ -421,7 +422,7 @@ def HSV(hue: Union[int, float], saturation: float, value: float) -> "Color":
     return Color((hue, saturation, value))
 
 
-def HSL(hue: Union[int, float], saturation: float, lightness: float) -> "Color":
+def HSL(hue: Union[int, float], saturation: float, lightness: float) -> Color:
     """
     Create new HSL color
 
@@ -446,7 +447,7 @@ def HSL(hue: Union[int, float], saturation: float, lightness: float) -> "Color":
     return Color(hsl_to_hsv(hue, saturation, lightness))
 
 
-def Hex(value: str) -> "Color":
+def Hex(value: str) -> Color:
     """Create a new Color from a hex string"""
     value = value.lstrip('#')
     lv = len(value)
@@ -466,7 +467,7 @@ class Color(DisplayColor):
     def __repr__(self) -> str:
         return "rgb=%s hsv=%s" % (self.rgb, self.hsv)
 
-    def copy(self) -> "Color":
+    def copy(self) -> Color:
         return deepcopy(self)
 
     def _set_hsv(self, hsv: tuple[float, float, float]) -> None:
@@ -527,7 +528,7 @@ class Color(DisplayColor):
         return self.hsv_t[0]
 
     @h.setter
-    def h(self, val: float) -> None:
+    def h(self, val: float):
         v = clamp(val, 0.0, 1.0)
         self.hsv_t[0] = round(v, 8)
 
@@ -536,7 +537,7 @@ class Color(DisplayColor):
         return self.hsv_t[1]
 
     @s.setter
-    def s(self, val: float) -> None:
+    def s(self, val: float):
         v = clamp(val, 0.0, 1.0)
         self.hsv_t[1] = round(v, 8)
 
@@ -545,7 +546,7 @@ class Color(DisplayColor):
         return self.hsv_t[2]
 
     @v.setter
-    def v(self, val: float) -> None:
+    def v(self, val: float):
         v = clamp(val, 0.0, 1.0) 
         self.hsv_t[2] = round(v, 8)
 
@@ -557,7 +558,7 @@ class Color(DisplayColor):
         return self.rgb[0]
 
     @rgb_r.setter
-    def rgb_r(self, r: int) -> None:
+    def rgb_r(self, r: int):
         _, g, b = self.rgb
         self._set_hsv(rgb_to_hsv(r, g, b))
 
@@ -566,7 +567,7 @@ class Color(DisplayColor):
         return self.rgb[1]
 
     @rgb_g.setter
-    def rgb_g(self, g: int) -> None:
+    def rgb_g(self, g: int):
         r, _, b = self.rgb
         self._set_hsv(rgb_to_hsv(r, g, b))
 
@@ -575,11 +576,11 @@ class Color(DisplayColor):
         return self.rgb[2]
 
     @rgb_b.setter
-    def rgb_b(self, b: int) -> None:
+    def rgb_b(self, b: int):
         r, g, _ = self.rgb
         self._set_hsv(rgb_to_hsv(r, g, b))
 
-    def scale(self, factor: float) -> "Color":
+    def scale(self, factor: float) -> Color:
         """
         Scales the brightness by a factor in [0,1].
         """

@@ -1,5 +1,6 @@
+from __future__ import annotations
 from collections.abc import Iterable, Sequence
-from typing import NamedTuple
+from typing import NamedTuple, Optional
 
 from .cell import Cell, Orientation
 from .grid import Grid, Query, Location
@@ -81,9 +82,9 @@ def pointed_down(grid: Grid) -> list[Cell]:
 
 
 class Neighbors(NamedTuple):
-    left: Cell
-    middle: Cell
-    right: Cell
+    left: Optional[Cell]
+    middle: Optional[Cell]
+    right: Optional[Cell]
 
 
 def edge_neighbors(loc: Location) -> Query:

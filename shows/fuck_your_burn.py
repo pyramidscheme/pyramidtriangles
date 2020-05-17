@@ -1,5 +1,6 @@
-from itertools import repeat, chain
+from __future__ import annotations
 from collections.abc import Iterable
+from itertools import repeat, chain
 
 from color import HSV
 from grid import Position, Pyramid
