@@ -22,7 +22,7 @@ logging.getLogger("cherrypy.access").propagate = False
 
 class Web:
     """Web API for running triangle shows."""
-    def __init__(self, command_queue: Queue, status_queue: Queue):
+    def __init__(self, command_queue: Queue, status_queue: Queue[Status]):
         # In-memory DB is easier than organizing thread-safety around all operations. At least one connection must stay
         # open. 'self.db' shouldn't be closed.
         self.db = PlaylistController()

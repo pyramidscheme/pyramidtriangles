@@ -1,17 +1,17 @@
 import queue
-import threading
 import cherrypy
 from cherrypy.test import helper
 
 from core.show_runner import RunShowCmd, RuntimeCmd
 from web import Web
 
-shutdown = threading.Event()
 command_queue = queue.LifoQueue()
 status_queue = queue.Queue()
 
 
 class WebTest(helper.CPWebCase):
+    helper.CPWebCase.interactive = False
+
     @staticmethod
     def setup_server():
         web = Web(
@@ -29,7 +29,7 @@ class WebTest(helper.CPWebCase):
     def test_cycle_time(self):
         assert command_queue.empty()
 
-        body = '{"value":30}'
+        body = '{"data":30}'
         self.getPage(
             url='/cycle_time',
             headers=[
@@ -59,7 +59,7 @@ class WebTest(helper.CPWebCase):
     def test_run_show(self):
         assert command_queue.empty()
 
-        body = '{"value":"Warp"}'
+        body = '{"data":"Warp"}'
         self.getPage(
             url='/shows',
             headers=[
@@ -74,7 +74,7 @@ class WebTest(helper.CPWebCase):
         assert command_queue.get() == RunShowCmd('Warp')
         assert command_queue.empty()
 
-        body = '{"value":"Invalid"}'
+        body = '{"data":"Invalid"}'
         self.getPage(
             url='/shows',
             headers=[
